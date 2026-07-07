@@ -1,32 +1,29 @@
 package com.skillconnect.controller;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
+import com.skillconnect.entity.Mechanic;
+import com.skillconnect.service.MechanicService;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 @RestController
+@RequestMapping("/api/mechanics")
+@CrossOrigin(origins = "*") //testing 
 public class MechanicController {
 
-    @GetMapping("/api/mechanics")
-    public List<Map<String, Object>> getMechanics() {
+    private final MechanicService mechanicService;
 
-        return List.of(
-                Map.of(
-                        "id", 1,
-                        "name", "Ramesh",
-                        "specialization", "Bike Mechanic",
-                        "city", "Vijayawada",
-                        "rating", 4.8
-                ),
-                Map.of(
-                        "id", 2,
-                        "name", "Suresh",
-                        "specialization", "Car Mechanic",
-                        "city", "Rajahmundry",
-                        "rating", 4.6
-                )
-        );
+    public MechanicController(MechanicService mechanicService) {
+        this.mechanicService = mechanicService;
+    }
+
+    @GetMapping
+    public List<Mechanic> getAllMechanics() {
+        return mechanicService.getAllMechanics();
+    }
+
+    @PostMapping
+    public Mechanic addMechanic(@RequestBody Mechanic mechanic) {
+        return mechanicService.saveMechanic(mechanic);
     }
 }
