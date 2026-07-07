@@ -4,6 +4,7 @@ import api from "../services/api";
 
 function Mechanics() {
   const [mechanics, setMechanics] = useState([]);
+  const [keyword, setKeyword] = useState("");
 
   useEffect(() => {
     loadMechanics();
@@ -18,6 +19,21 @@ function Mechanics() {
         console.error(error);
       });
   };
+  const searchMechanics = () => {
+
+  if (keyword.trim() === "") {
+    loadMechanics();
+    return;
+  }
+
+  api.get(`/api/mechanics/search?keyword=${keyword}`)
+    .then((response) => {
+      setMechanics(response.data);
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+};
 
   const deleteMechanic = async (id) => {
 
@@ -48,9 +64,34 @@ function Mechanics() {
         <Link to="/add-mechanic">
           <button>Add Mechanic</button>
         </Link>
+        <Link to="/map">
+  <button>
+    🗺️ View Map
+  </button>
+</Link>
       </div>
 
       <h2>Available Mechanics</h2>
+
+<div style={{ marginBottom: "20px" }}>
+
+  <input
+    type="text"
+    placeholder="Search by name, city or specialization"
+    value={keyword}
+    onChange={(e) => setKeyword(e.target.value)}
+    style={{
+      padding: "10px",
+      width: "300px",
+      marginRight: "10px"
+    }}
+  />
+
+  <button onClick={searchMechanics}>
+    🔍 Search
+  </button>
+
+</div>
 
       {mechanics.map((mechanic) => (
         <div
@@ -74,19 +115,27 @@ function Mechanics() {
 
           <div style={{ marginTop: "10px" }}>
 
-            <Link to={`/edit-mechanic/${mechanic.id}`}>
-              <button style={{ marginRight: "10px" }}>
-                Edit
-              </button>
-            </Link>
+  <Link to={`/mechanics/${mechanic.id}`}>
+    <button style={{ marginRight: "10px" }}>
+      View Details
+    </button>
+  </Link>
 
-            <button
-              onClick={() => deleteMechanic(mechanic.id)}
-            >
-              Delete
-            </button>
 
-          </div>
+  <Link to={`/edit-mechanic/${mechanic.id}`}>
+    <button style={{ marginRight: "10px" }}>
+      Edit
+    </button>
+  </Link>
+
+
+  <button
+    onClick={() => deleteMechanic(mechanic.id)}
+  >
+    Delete
+  </button>
+
+</div>
 
         </div>
       ))}

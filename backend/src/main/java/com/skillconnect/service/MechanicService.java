@@ -50,4 +50,14 @@ public class MechanicService {
     public void deleteMechanic(Long id) {
         mechanicRepository.deleteById(id);
     }
+    // Search mechanics
+public List<Mechanic> searchMechanics(String keyword) {
+    return mechanicRepository.searchMechanics(keyword);
+}
+// Get mechanic by id
+public Mechanic getMechanicById(Long id) {
+
+    return mechanicRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Mechanic not found"));
+}
 }

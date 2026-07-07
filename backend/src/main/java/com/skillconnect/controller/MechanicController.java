@@ -41,4 +41,18 @@ public class MechanicController {
     public void deleteMechanic(@PathVariable Long id) {
         mechanicService.deleteMechanic(id);
     }
+
+    // Search mechanics
+    @GetMapping("/search")
+    public List<Mechanic> searchMechanics(
+            @RequestParam String keyword) {
+
+        return mechanicService.searchMechanics(keyword);
+    }
+    // Get mechanic by id
+@GetMapping("/{id}")
+public Mechanic getMechanicById(@PathVariable Long id) {
+
+    return mechanicService.getMechanicById(id);
+}
 }
