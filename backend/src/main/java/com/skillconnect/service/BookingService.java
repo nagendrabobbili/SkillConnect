@@ -41,4 +41,26 @@ public class BookingService {
     public void deleteBooking(Long id) {
         bookingRepository.deleteById(id);
     }
+    // Get bookings by customer phone
+public List<Booking> getBookingsByCustomerPhone(String phone) {
+
+    return bookingRepository.findByCustomerPhone(phone);
+
+}
+// Get bookings for mechanic
+public List<Booking> getBookingsByMechanic(Long mechanicId) {
+
+    return bookingRepository.findByMechanicId(mechanicId);
+
+}
+// Update booking status
+public Booking updateBookingStatus(Long id, String status) {
+
+    Booking booking = bookingRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Booking not found"));
+
+    booking.setStatus(status);
+
+    return bookingRepository.save(booking);
+}
 }

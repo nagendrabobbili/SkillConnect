@@ -42,6 +42,15 @@ public class BookingController {
 
         return bookingService.getBookingById(id);
     }
+    // Get customer booking history
+@GetMapping("/customer/{phone}")
+public List<Booking> getCustomerBookings(
+        @PathVariable String phone) {
+
+    return bookingService.getBookingsByCustomerPhone(phone);
+
+}
+
 
 
     // Delete booking
@@ -50,5 +59,24 @@ public class BookingController {
 
         bookingService.deleteBooking(id);
     }
+    // Get mechanic incoming bookings
+@GetMapping("/mechanic/{mechanicId}")
+public List<Booking> getMechanicBookings(
+        @PathVariable Long mechanicId) {
+
+    return bookingService.getBookingsByMechanic(mechanicId);
+
+}
+
+
+// Update booking status
+@PutMapping("/{id}/status/{status}")
+public Booking updateBookingStatus(
+        @PathVariable Long id,
+        @PathVariable String status) {
+
+    return bookingService.updateBookingStatus(id, status);
+
+}
 
 }
