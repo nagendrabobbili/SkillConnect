@@ -1,97 +1,109 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import api from "../services/api";
+import {
+  FaCalendarAlt,
+  FaPhone,
+  FaTools,
+  FaMapMarkerAlt,
+} from "react-icons/fa";
 
 function MyBookings() {
-
-  const [phone, setPhone] = useState("");
   const [bookings, setBookings] = useState([]);
 
+  useEffect(() => {
+    loadBookings();
+  }, []);
 
-  const searchBookings = () => {
-
-    api.get(`/api/bookings/customer/${phone}`)
+  const loadBookings = () => {
+    api.get("/api/bookings")
       .then((response) => {
-
         setBookings(response.data);
-
       })
       .catch((error) => {
-
         console.error(error);
-
       });
-
   };
 
+  const getStatusBadge = (status) => {
+    switch (status) {
+      case "PENDING":
+        return "bg-warning";
+      case "ACCEPTED":
+        return "bg-success";
+      case "REJECTED":
+        return "bg-danger";
+      case "COMPLETED":
+        return "bg-primary";
+      default:
+        return "bg-secondary";
+    }
+  };
 
   return (
+    <div className="container py-5">
 
-    <div style={{padding:"20px"}}>
+      <h1 className="text-center text-primary fw-bold mb-5">
+        📋 My Bookings
+      </h1>
 
-      <h1>📋 My Bookings</h1>
+      <div className="row">
 
-
-      <input
-        type="text"
-        placeholder="Enter phone number"
-        value={phone}
-        onChange={(e)=>setPhone(e.target.value)}
-      />
-
-
-      <button onClick={searchBookings}>
-        Search
-      </button>
-
-
-
-      {
-        bookings.map((booking)=>(
-
+        {bookings.map((booking) => (
           <div
+            className="col-lg-4 col-md-6 mb-4"
             key={booking.id}
-            style={{
-              border:"1px solid #ccc",
-              padding:"15px",
-              marginTop:"15px",
-              borderRadius:"10px"
-            }}
           >
+            <div
+              className="card shadow-lg border-0 h-100"
+              style={{ borderRadius: "20px" }}
+            >
+              <div className="card-body">
 
-            <h3>
-              🚗 {booking.mechanic.fullName}
-            </h3>
+                <h4 className="fw-bold text-primary">
+                  🚗 {booking.mechanic.fullName}
+                </h4>
 
+                <p>
+                  <FaPhone className="me-2 text-success" />
+                  {booking.mechanic.phone}
+                </p>
 
-            <p>
-              🛠 Service:
-              {booking.serviceType}
-            </p>
+                <p>
+                  <FaMapMarkerAlt className="me-2 text-danger" />
+                  {booking.mechanic.city}
+                </p>
 
+                <hr />
 
-            <p>
-              📅 Date:
-              {booking.bookingDate}
-            </p>
+                <p>
+                  <FaTools className="me-2 text-warning" />
+                  {booking.serviceType}
+                </p>
 
+                <p>
+                  <FaCalendarAlt className="me-2 text-info" />
+                  {booking.bookingDate}
+                </p>
 
-            <p>
-              Status:
-              {booking.status}
-            </p>
+                <div className="mt-3">
+                  <span
+                    className={`badge ${getStatusBadge(
+                      booking.status
+                    )} fs-6`}
+                  >
+                    {booking.status}
+                  </span>
+                </div>
 
-
+              </div>
+            </div>
           </div>
+        ))}
 
-        ))
-      }
-
+      </div>
 
     </div>
-
   );
-
 }
-
 
 export default MyBookings;

@@ -5,17 +5,26 @@
 // import org.springframework.security.config.Customizer;
 // import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 // import org.springframework.security.web.SecurityFilterChain;
+// import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+// import org.springframework.security.crypto.password.PasswordEncoder;
 
 // @Configuration
 // public class SecurityConfig {
 
 //     @Bean
-//     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+//     public PasswordEncoder passwordEncoder() {
+//         return new BCryptPasswordEncoder();
+//     }
+
+//     @Bean
+//     public SecurityFilterChain securityFilterChain(
+//             HttpSecurity http) throws Exception {
 
 //         http
 //                 .cors(Customizer.withDefaults())
 //                 .csrf(csrf -> csrf.disable())
 //                 .authorizeHttpRequests(auth -> auth
+//                         .requestMatchers("/api/auth/**").permitAll()
 //                         .anyRequest().permitAll()
 //                 )
 //                 .formLogin(form -> form.disable())

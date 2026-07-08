@@ -1,5 +1,14 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import {
+  FaMapMarkerAlt,
+  FaPhone,
+  FaStar,
+  FaPlus,
+  FaEdit,
+  FaTrash,
+  FaSearch
+} from "react-icons/fa";
 import api from "../services/api";
 
 function Mechanics() {
@@ -19,126 +28,131 @@ function Mechanics() {
         console.error(error);
       });
   };
+
   const searchMechanics = () => {
+    if (keyword.trim() === "") {
+      loadMechanics();
+      return;
+    }
 
-  if (keyword.trim() === "") {
-    loadMechanics();
-    return;
-  }
-
-  api.get(`/api/mechanics/search?keyword=${keyword}`)
-    .then((response) => {
-      setMechanics(response.data);
-    })
-    .catch((error) => {
-      console.error(error);
-    });
-};
+    api.get(`/api/mechanics/search?keyword=${keyword}`)
+      .then((response) => {
+        setMechanics(response.data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
 
   const deleteMechanic = async (id) => {
-
-    const confirmDelete = window.confirm(
-      "Are you sure you want to delete this mechanic?"
-    );
-
-    if (!confirmDelete) return;
+    if (!window.confirm("Delete this mechanic?")) return;
 
     try {
       await api.delete(`/api/mechanics/${id}`);
-
-      alert("Mechanic Deleted Successfully!");
-
       loadMechanics();
-
     } catch (error) {
       console.error(error);
-      alert("Failed to Delete Mechanic");
     }
   };
 
   return (
-    <div style={{ padding: "20px" }}>
-      <h1>🚗 SkillConnect</h1>
+    <div className="container py-5">
 
-      <div style={{ marginBottom: "20px" }}>
+      <div className="d-flex justify-content-between align-items-center mb-4">
+        <h1 className="fw-bold text-primary">
+          🚗 SkillConnect Mechanics
+        </h1>
+
         <Link to="/add-mechanic">
-          <button>Add Mechanic</button>
+          <button className="btn btn-primary">
+            <FaPlus /> Add Mechanic
+          </button>
         </Link>
-        <Link to="/map">
-  <button>
-    🗺️ View Map
-  </button>
-</Link>
       </div>
 
-      <h2>Available Mechanics</h2>
+      <div className="card shadow p-3 mb-5">
+        <div className="row">
+          <div className="col-md-10">
+            <input
+              type="text"
+              className="form-control"
+              placeholder="Search by name, city or specialization"
+              value={keyword}
+              onChange={(e) => setKeyword(e.target.value)}
+            />
+          </div>
 
-<div style={{ marginBottom: "20px" }}>
-
-  <input
-    type="text"
-    placeholder="Search by name, city or specialization"
-    value={keyword}
-    onChange={(e) => setKeyword(e.target.value)}
-    style={{
-      padding: "10px",
-      width: "300px",
-      marginRight: "10px"
-    }}
-  />
-
-  <button onClick={searchMechanics}>
-    🔍 Search
-  </button>
-
-</div>
-
-      {mechanics.map((mechanic) => (
-        <div
-          key={mechanic.id}
-          style={{
-            border: "1px solid #ccc",
-            padding: "15px",
-            marginBottom: "10px",
-            borderRadius: "10px",
-          }}
-        >
-          <h3>{mechanic.fullName}</h3>
-
-          <p><strong>Phone:</strong> {mechanic.phone}</p>
-
-          <p><strong>Specialization:</strong> {mechanic.specialization}</p>
-
-          <p><strong>City:</strong> {mechanic.city}</p>
-
-          <p>⭐ {mechanic.rating}</p>
-
-          <div style={{ marginTop: "10px" }}>
-
-  <Link to={`/mechanics/${mechanic.id}`}>
-    <button style={{ marginRight: "10px" }}>
-      View Details
-    </button>
-  </Link>
-
-
-  <Link to={`/edit-mechanic/${mechanic.id}`}>
-    <button style={{ marginRight: "10px" }}>
-      Edit
-    </button>
-  </Link>
-
-
-  <button
-    onClick={() => deleteMechanic(mechanic.id)}
-  >
-    Delete
-  </button>
-
-</div>
-
+          <div className="col-md-2">
+            <button
+              className="btn btn-success w-100"
+              onClick={searchMechanics}
+            >
+              <FaSearch /> Search
+            </button>
+          </div>
         </div>
-      ))}
+      </div>
+
+      <div className="row">
+        {mechanics.map((mechanic) => (
+          <div
+            className="col-lg-4 col-md-6 mb-4"
+            key={mechanic.id}
+          >
+            <div
+              className="card shadow-lg border-0 h-100"
+              style={{ borderRadius: "20px" }}
+            >
+              <div className="card-body">
+
+                <h4 className="fw-bold text-primary">
+                  {mechanic.fullName}
+                </h4>
+
+                <p>
+                  <FaPhone className="me-2 text-success" />
+                  {mechanic.phone}
+                </p>
+
+                <p>
+                  🔧 {mechanic.specialization}
+                </p>
+
+                <p>
+                  <FaMapMarkerAlt className="me-2 text-danger" />
+                  {mechanic.city}
+                </p>
+
+                <p>
+                  <FaStar className="text-warning me-2" />
+                  {mechanic.rating}
+                </p>
+
+                <div className="mt-4">
+
+                  <Link to={`/edit-mechanic/${mechanic.id}`}>
+                    <button className="btn btn-warning me-2">
+                      <FaEdit /> Edit
+                    </button>
+                  </Link>
+
+                  <button
+                    className="btn btn-danger"
+                    onClick={() =>
+                      deleteMechanic(mechanic.id)
+                    }
+                  >
+                    <FaTrash /> Delete
+                  </button>
+
+                </div>
+
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
     </div>
   );
 }

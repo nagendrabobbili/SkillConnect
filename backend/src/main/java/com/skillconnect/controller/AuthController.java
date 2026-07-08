@@ -3,6 +3,7 @@ package com.skillconnect.controller;
 import com.skillconnect.dto.LoginRequest;
 import com.skillconnect.entity.User;
 import com.skillconnect.repository.UserRepository;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -10,41 +11,47 @@ import org.springframework.web.bind.annotation.*;
 @CrossOrigin(origins = "*")
 public class AuthController {
 
-
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
+    public AuthController(
+            UserRepository userRepository,
+            PasswordEncoder passwordEncoder) {
 
-    public AuthController(UserRepository userRepository) {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
-
 
     @PostMapping("/register")
     public User register(@RequestBody User user) {
 
+        user.setPassword(
+                passwordEncoder.encode(
+                        user.getPassword()
+                )
+        );
+
         return userRepository.save(user);
-
     }
-
 
     @PostMapping("/login")
-    public User login(@RequestBody LoginRequest request) {
+    public User login(
+            @RequestBody LoginRequest request) {
 
+        User user = userRepository.findByEmail(
+                request.getEmail())
+                .orElseThrow(() ->
+                        new RuntimeException(
+                                "User not found"));
 
-        User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> 
-                new RuntimeException("User not found"));
+        if (!passwordEncoder.matches(
+                request.getPassword(),
+                user.getPassword())) {
 
-
-        if(!user.getPassword().equals(request.getPassword())) {
-
-            throw new RuntimeException("Invalid password");
-
+            throw new RuntimeException(
+                    "Invalid password");
         }
 
-
         return user;
-
     }
-
 }
