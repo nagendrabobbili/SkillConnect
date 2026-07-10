@@ -1,8 +1,11 @@
 package com.skillconnect.controller;
 
 import com.skillconnect.dto.LoginRequest;
+import com.skillconnect.dto.LoginResponse;
 import com.skillconnect.entity.User;
 import com.skillconnect.repository.UserRepository;
+import com.skillconnect.security.JwtUtil;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,17 +16,23 @@ public class AuthController {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtUtil jwtUtil;
 
     public AuthController(
             UserRepository userRepository,
-            PasswordEncoder passwordEncoder) {
+            PasswordEncoder passwordEncoder,
+            JwtUtil jwtUtil
+    ) {
 
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.jwtUtil = jwtUtil;
     }
 
     @PostMapping("/register")
-    public User register(@RequestBody User user) {
+    public User register(
+            @RequestBody User user
+    ) {
 
         user.setPassword(
                 passwordEncoder.encode(
@@ -35,23 +44,41 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public User login(
-            @RequestBody LoginRequest request) {
+    public LoginResponse login(
+            @RequestBody LoginRequest request
+    ) {
 
-        User user = userRepository.findByEmail(
-                request.getEmail())
+        User user = userRepository
+                .findByEmail(
+                        request.getEmail()
+                )
                 .orElseThrow(() ->
                         new RuntimeException(
-                                "User not found"));
+                                "User not found"
+                        )
+                );
 
         if (!passwordEncoder.matches(
                 request.getPassword(),
-                user.getPassword())) {
+                user.getPassword()
+        )) {
 
             throw new RuntimeException(
-                    "Invalid password");
+                    "Invalid password"
+            );
         }
 
-        return user;
+        String token =
+                jwtUtil.generateToken(
+                        user.getEmail(),
+                        user.getRole()
+                );
+
+        return new LoginResponse(
+                token,
+                user.getName(),
+                user.getEmail(),
+                user.getRole()
+        );
     }
 }

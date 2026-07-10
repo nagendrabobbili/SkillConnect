@@ -24,38 +24,80 @@ function Login() {
         }
       );
 
+      // Store JWT Token
+      localStorage.setItem(
+        "token",
+        response.data.token
+      );
+
+      // Store User Details
       localStorage.setItem(
         "user",
-        JSON.stringify(response.data)
+        JSON.stringify({
+          name: response.data.name,
+          email: response.data.email,
+          role: response.data.role
+        })
       );
 
       alert("Login Successful!");
 
       console.log(response.data);
 
-      if (response.data.role === "MECHANIC") {
-  window.location.href = "/mechanic-dashboard";
-} else {
-  window.location.href = "/";
-}
+      // Role Based Redirect
+      if (response.data.role === "ADMIN") {
 
-    } catch (error) {
+        navigate("/admin");
+
+      }
+      else if (
+        response.data.role === "MECHANIC"
+      ) {
+
+        navigate(
+          "/mechanic-dashboard"
+        );
+
+      }
+      else if (
+        response.data.role === "CUSTOMER"
+      ) {
+
+        navigate("/");
+
+      }
+      else {
+
+        navigate("/");
+
+      }
+
+      // Refresh Navbar immediately
+      window.location.reload();
+
+    }
+    catch (error) {
 
       console.error(error);
 
-      alert("Invalid Email or Password");
+      alert(
+        "Invalid Email or Password"
+      );
 
     }
   };
 
   return (
+
     <div
       className="d-flex justify-content-center align-items-center"
       style={{
         minHeight: "100vh",
-        background: "linear-gradient(135deg, #0d6efd, #198754)"
+        background:
+          "linear-gradient(135deg,#0d6efd,#198754)"
       }}
     >
+
       <div
         className="card shadow-lg p-5 border-0"
         style={{
@@ -63,6 +105,7 @@ function Login() {
           borderRadius: "20px"
         }}
       >
+
         <h1 className="text-center text-primary mb-4">
           🚗 SkillConnect
         </h1>
@@ -74,9 +117,11 @@ function Login() {
         <form onSubmit={handleLogin}>
 
           <div className="mb-3">
+
             <label>Email</label>
 
             <div className="input-group">
+
               <span className="input-group-text">
                 <FaEnvelope />
               </span>
@@ -86,16 +131,22 @@ function Login() {
                 className="form-control"
                 placeholder="Enter Email"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) =>
+                  setEmail(e.target.value)
+                }
                 required
               />
+
             </div>
+
           </div>
 
           <div className="mb-4">
+
             <label>Password</label>
 
             <div className="input-group">
+
               <span className="input-group-text">
                 <FaLock />
               </span>
@@ -105,10 +156,14 @@ function Login() {
                 className="form-control"
                 placeholder="Enter Password"
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={(e) =>
+                  setPassword(e.target.value)
+                }
                 required
               />
+
             </div>
+
           </div>
 
           <button
@@ -121,12 +176,19 @@ function Login() {
         </form>
 
         <p className="text-center mt-4">
+
           Don't have an account?
-          <Link to="/register"> Register</Link>
+
+          <Link to="/register">
+            {" "}Register
+          </Link>
+
         </p>
 
       </div>
+
     </div>
+
   );
 }
 

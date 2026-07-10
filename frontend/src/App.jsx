@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import Navbar from "./components/Navbar";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 import Home from "./pages/Home";
 import Mechanics from "./pages/Mechanics";
@@ -13,9 +14,15 @@ import MechanicDashboard from "./pages/MechanicDashboard";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import AdminDashboard from "./pages/AdminDashboard";
+import AdminMechanicView from "./pages/AdminMechanicView";
+import CustomerList from "./pages/CustomerList";
+import ReviewMechanic from "./pages/ReviewMechanic";
+import AddReview from "./pages/AddReview";
 
 function App() {
+
   return (
+
     <BrowserRouter>
 
       {/* Navbar visible on all pages */}
@@ -23,48 +30,177 @@ function App() {
 
       <Routes>
 
-        {/* Home */}
-        <Route path="/" element={<Home />} />
+        {/* Public Routes */}
+        <Route
+          path="/"
+          element={<Home />}
+        />
 
-        {/* Mechanics */}
-        <Route path="/mechanics" element={<Mechanics />} />
-        <Route path="/mechanics/:id" element={<MechanicDetails />} />
-        <Route path="/add-mechanic" element={<AddMechanic />} />
-        <Route path="/join-mechanic" element={<AddMechanic />} />
-        <Route path="/edit-mechanic/:id" element={<AddMechanic />} />
+        <Route
+          path="/login"
+          element={<Login />}
+        />
 
-        {/* Map */}
-        <Route path="/map" element={<MechanicMap />} />
+        <Route
+          path="/register"
+          element={<Register />}
+        />
 
-        {/* Booking */}
+        <Route
+          path="/map"
+          element={<MechanicMap />}
+        />
+
+        {/* Customer Routes */}
+        <Route
+          path="/mechanics"
+          element={
+            <ProtectedRoute
+              allowedRole="CUSTOMER"
+            >
+              <Mechanics />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/mechanics/:id"
+          element={
+            <ProtectedRoute
+              allowedRole="CUSTOMER"
+            >
+              <MechanicDetails />
+            </ProtectedRoute>
+          }
+        />
+
         <Route
           path="/book-mechanic/:id"
-          element={<BookMechanic />}
+          element={
+            <ProtectedRoute
+              allowedRole="CUSTOMER"
+            >
+              <BookMechanic />
+            </ProtectedRoute>
+          }
         />
 
-        {/* Customer */}
         <Route
           path="/my-bookings"
-          element={<MyBookings />}
+          element={
+            <ProtectedRoute
+              allowedRole="CUSTOMER"
+            >
+              <MyBookings />
+            </ProtectedRoute>
+          }
         />
 
-        {/* Mechanic */}
+        <Route
+          path="/review/:id"
+          element={
+            <ProtectedRoute
+              allowedRole="CUSTOMER"
+            >
+              <AddReview />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/review-booking/:bookingId"
+          element={
+            <ProtectedRoute
+              allowedRole="CUSTOMER"
+            >
+              <ReviewMechanic />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Mechanic Routes */}
         <Route
           path="/mechanic-dashboard"
-          element={<MechanicDashboard />}
+          element={
+            <ProtectedRoute
+              allowedRole="MECHANIC"
+            >
+              <MechanicDashboard />
+            </ProtectedRoute>
+          }
         />
-        <Route 
- path="/admin"
- element={<AdminDashboard/>}
-/>
 
-        {/* Authentication */}
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
+        {/* Admin Routes */}
+        <Route
+          path="/admin"
+          element={
+            <ProtectedRoute
+              allowedRole="ADMIN"
+            >
+              <AdminDashboard />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/customers"
+          element={
+            <ProtectedRoute
+              allowedRole="ADMIN"
+            >
+              <CustomerList />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/admin/mechanic/:id"
+          element={
+            <ProtectedRoute
+              allowedRole="ADMIN"
+            >
+              <AdminMechanicView />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/add-mechanic"
+          element={
+            <ProtectedRoute
+              allowedRole="ADMIN"
+            >
+              <AddMechanic />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/join-mechanic"
+          element={
+            <ProtectedRoute
+              allowedRole="ADMIN"
+            >
+              <AddMechanic />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/edit-mechanic/:id"
+          element={
+            <ProtectedRoute
+              allowedRole="ADMIN"
+            >
+              <AddMechanic />
+            </ProtectedRoute>
+          }
+        />
 
       </Routes>
 
     </BrowserRouter>
+
   );
 }
 

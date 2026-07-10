@@ -1,7 +1,9 @@
 package com.skillconnect.service;
 
+
 import com.skillconnect.entity.Mechanic;
 import com.skillconnect.entity.User;
+
 import com.skillconnect.repository.MechanicRepository;
 import com.skillconnect.repository.UserRepository;
 
@@ -10,13 +12,21 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+
+
 @Service
 public class MechanicService {
 
 
+
     private final MechanicRepository mechanicRepository;
+
     private final UserRepository userRepository;
+
     private final PasswordEncoder passwordEncoder;
+
+
+
 
 
     public MechanicService(
@@ -24,15 +34,25 @@ public class MechanicService {
             UserRepository userRepository,
             PasswordEncoder passwordEncoder) {
 
+
         this.mechanicRepository = mechanicRepository;
+
         this.userRepository = userRepository;
+
         this.passwordEncoder = passwordEncoder;
 
     }
 
 
 
+
+
+
+
+
+
     // Get all mechanics
+
     public List<Mechanic> getAllMechanics() {
 
         return mechanicRepository.findAll();
@@ -41,73 +61,341 @@ public class MechanicService {
 
 
 
+
+
+
+
+
+
+    // Get available mechanics
+
+    public List<Mechanic> getAvailableMechanics() {
+
+
+        return mechanicRepository
+                .findByAvailabilityStatus(
+                        "AVAILABLE"
+                );
+
+    }
+
+
+
+
+
+
+
+
+
+    // Find nearby available mechanics
+
+    public List<Mechanic> getNearbyMechanics(
+            Double userLatitude,
+            Double userLongitude,
+            Double distance) {
+
+
+
+        List<Mechanic> mechanics =
+                mechanicRepository
+                .findByAvailabilityStatus(
+                        "AVAILABLE"
+                );
+
+
+
+        return mechanics.stream()
+
+                .filter(mechanic -> {
+
+
+                    if(mechanic.getLatitude()==null ||
+                       mechanic.getLongitude()==null){
+
+                        return false;
+
+                    }
+
+
+
+                    double calculatedDistance =
+                            calculateDistance(
+
+                                    userLatitude,
+
+                                    userLongitude,
+
+                                    mechanic.getLatitude(),
+
+                                    mechanic.getLongitude()
+
+                            );
+
+
+
+                    return calculatedDistance <= distance;
+
+
+                })
+
+                .toList();
+
+
+    }
+
+
+
+
+
+
+
+
+
+    // Haversine formula
+
+    private double calculateDistance(
+
+            double lat1,
+
+            double lon1,
+
+            double lat2,
+
+            double lon2) {
+
+
+
+        final int EARTH_RADIUS = 6371;
+
+
+
+        double latDistance =
+                Math.toRadians(
+                        lat2 - lat1
+                );
+
+
+
+        double lonDistance =
+                Math.toRadians(
+                        lon2 - lon1
+                );
+
+
+
+        double a =
+
+                Math.sin(latDistance / 2)
+                *
+                Math.sin(latDistance / 2)
+
+                +
+
+                Math.cos(
+                        Math.toRadians(lat1)
+                )
+
+                *
+                Math.cos(
+                        Math.toRadians(lat2)
+                )
+
+                *
+                Math.sin(lonDistance / 2)
+
+                *
+                Math.sin(lonDistance / 2);
+
+
+
+        double c =
+
+                2 *
+
+                Math.atan2(
+
+                        Math.sqrt(a),
+
+                        Math.sqrt(1 - a)
+
+                );
+
+
+
+        return EARTH_RADIUS * c;
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+
     // Add mechanic + create login account
-    public Mechanic saveMechanic(Mechanic mechanic) {
+
+    public Mechanic saveMechanic(
+            Mechanic mechanic) {
 
 
-        // Create User account for mechanic
+
+        if(mechanic.getAvailabilityStatus()==null){
+
+            mechanic.setAvailabilityStatus(
+                    "AVAILABLE"
+            );
+
+        }
+
+
+
+
 
         User user = new User();
 
-        user.setName(mechanic.getFullName());
-
-        user.setEmail(mechanic.getEmail());
 
 
-        // Use password entered during registration
-
-        user.setPassword(
-                passwordEncoder.encode(
-                        mechanic.getPassword()
-                )
+        user.setName(
+                mechanic.getFullName()
         );
 
 
-        user.setRole("MECHANIC");
+
+        user.setEmail(
+                mechanic.getEmail()
+        );
+
+
+
+        user.setPassword(
+
+                passwordEncoder.encode(
+
+                        mechanic.getPassword()
+
+                )
+
+        );
+
+
+
+        user.setRole(
+                "MECHANIC"
+        );
+
 
 
         userRepository.save(user);
 
 
 
-        // Save mechanic profile
 
-        return mechanicRepository.save(mechanic);
+
+        return mechanicRepository.save(
+                mechanic
+        );
 
     }
 
 
 
 
+
+
+
+
+
+
+
+
+    // Update mechanic details
 
     public Mechanic updateMechanic(
             Long id,
             Mechanic updatedMechanic) {
 
 
+
         Mechanic mechanic =
+
                 mechanicRepository.findById(id)
+
                 .orElseThrow(
+
                     () -> new RuntimeException(
-                        "Mechanic not found"
+                            "Mechanic not found"
                     )
+
                 );
 
 
-        mechanic.setFullName(updatedMechanic.getFullName());
-        mechanic.setPhone(updatedMechanic.getPhone());
-        mechanic.setEmail(updatedMechanic.getEmail());
-        mechanic.setSpecialization(updatedMechanic.getSpecialization());
-        mechanic.setExperience(updatedMechanic.getExperience());
-        mechanic.setCity(updatedMechanic.getCity());
-        mechanic.setAddress(updatedMechanic.getAddress());
-        mechanic.setLatitude(updatedMechanic.getLatitude());
-        mechanic.setLongitude(updatedMechanic.getLongitude());
-        mechanic.setRating(updatedMechanic.getRating());
-        mechanic.setAvailable(updatedMechanic.getAvailable());
 
 
-        return mechanicRepository.save(mechanic);
+
+        mechanic.setFullName(
+                updatedMechanic.getFullName()
+        );
+
+
+        mechanic.setPhone(
+                updatedMechanic.getPhone()
+        );
+
+
+        mechanic.setEmail(
+                updatedMechanic.getEmail()
+        );
+
+
+        mechanic.setSpecialization(
+                updatedMechanic.getSpecialization()
+        );
+
+
+        mechanic.setExperience(
+                updatedMechanic.getExperience()
+        );
+
+
+        mechanic.setCity(
+                updatedMechanic.getCity()
+        );
+
+
+        mechanic.setAddress(
+                updatedMechanic.getAddress()
+        );
+
+
+        mechanic.setLatitude(
+                updatedMechanic.getLatitude()
+        );
+
+
+        mechanic.setLongitude(
+                updatedMechanic.getLongitude()
+        );
+
+
+        mechanic.setRating(
+                updatedMechanic.getRating()
+        );
+
+
+        mechanic.setAvailabilityStatus(
+                updatedMechanic.getAvailabilityStatus()
+        );
+
+
+
+        return mechanicRepository.save(
+                mechanic
+        );
 
     }
 
@@ -115,9 +403,44 @@ public class MechanicService {
 
 
 
-    public void deleteMechanic(Long id) {
 
-        mechanicRepository.deleteById(id);
+
+
+
+
+
+
+    // Update availability status
+
+    public Mechanic updateAvailability(
+            Long id,
+            String status) {
+
+
+
+        Mechanic mechanic =
+
+                mechanicRepository.findById(id)
+
+                .orElseThrow(
+
+                    () -> new RuntimeException(
+                            "Mechanic not found"
+                    )
+
+                );
+
+
+
+        mechanic.setAvailabilityStatus(
+                status
+        );
+
+
+
+        return mechanicRepository.save(
+                mechanic
+        );
 
     }
 
@@ -125,9 +448,22 @@ public class MechanicService {
 
 
 
-    public List<Mechanic> searchMechanics(String keyword) {
 
-        return mechanicRepository.searchMechanics(keyword);
+
+
+
+
+
+
+    // Delete mechanic
+
+    public void deleteMechanic(
+            Long id) {
+
+
+        mechanicRepository.deleteById(
+                id
+        );
 
     }
 
@@ -135,15 +471,53 @@ public class MechanicService {
 
 
 
-    public Mechanic getMechanicById(Long id) {
+
+
+
+
+
+
+
+    // Search mechanics
+
+    public List<Mechanic> searchMechanics(
+            String keyword) {
+
+
+        return mechanicRepository.searchMechanics(
+                keyword
+        );
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+    // Get mechanic by id
+
+    public Mechanic getMechanicById(
+            Long id) {
+
 
         return mechanicRepository.findById(id)
+
                 .orElseThrow(
+
                     () -> new RuntimeException(
-                        "Mechanic not found"
+                            "Mechanic not found"
                     )
+
                 );
 
     }
+
 
 }

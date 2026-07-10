@@ -7,7 +7,10 @@ import {
   FaTools,
   FaCheckCircle,
   FaTimesCircle,
-  FaClock
+  FaClock,
+  FaClipboardCheck,
+  FaEnvelope,
+  FaPowerOff
 } from "react-icons/fa";
 
 
@@ -17,6 +20,10 @@ function MechanicDashboard() {
   const [bookings, setBookings] = useState([]);
 
   const [mechanicId, setMechanicId] = useState(null);
+
+  const [available, setAvailable] = useState(false);
+
+  const [loading, setLoading] = useState(true);
 
 
 
@@ -29,7 +36,7 @@ function MechanicDashboard() {
 
 
 
-  // Find logged in mechanic id
+
   const loadMechanic = async () => {
 
 
@@ -42,8 +49,10 @@ function MechanicDashboard() {
 
 
       if(!user){
-        console.log("User not logged in");
+
+        setLoading(false);
         return;
+
       }
 
 
@@ -54,27 +63,29 @@ function MechanicDashboard() {
 
 
 
-      const mechanic = response.data.find(
-        m => m.email === user.email
-      );
+      const mechanic =
+        response.data.find(
+          m => m.email === user.email
+        );
 
 
 
       if(mechanic){
 
 
-        setMechanicId(mechanic.id);
+        setMechanicId(
+          mechanic.id
+        );
 
 
-        loadBookings(mechanic.id);
+        setAvailable(
+          mechanic.available
+        );
 
 
-      }
-      else{
 
-
-        console.log(
-          "Mechanic profile not found"
+        loadBookings(
+          mechanic.id
         );
 
 
@@ -82,10 +93,15 @@ function MechanicDashboard() {
 
 
 
+      setLoading(false);
+
+
     }
     catch(error){
 
-      console.error(error);
+      console.log(error);
+
+      setLoading(false);
 
     }
 
@@ -97,28 +113,31 @@ function MechanicDashboard() {
 
 
 
-  const loadBookings = (id)=>{
+
+  const loadBookings = async(id)=>{
 
 
-    api.get(
-      `/api/bookings/mechanic/${id}`
-    )
-
-    .then(response=>{
+    try{
 
 
-      setBookings(response.data);
+      const response = await api.get(
+
+        `/api/bookings/mechanic/${id}`
+
+      );
 
 
-    })
-
-    .catch(error=>{
-
-
-      console.error(error);
+      setBookings(
+        response.data
+      );
 
 
-    });
+    }
+    catch(error){
+
+      console.log(error);
+
+    }
 
 
   };
@@ -129,14 +148,74 @@ function MechanicDashboard() {
 
 
 
-  const updateStatus = async(id,status)=>{
+
+
+  // Availability Toggle
+
+  const changeAvailability = async(status)=>{
 
 
     try{
 
 
       await api.put(
-        `/api/bookings/${id}/status/${status}`
+
+        `/api/mechanics/${mechanicId}/availability?available=${status}`
+
+      );
+
+
+      setAvailable(status);
+
+
+
+      alert(
+        status
+        ?
+        "You are Online now"
+        :
+        "You are Offline now"
+      );
+
+
+    }
+    catch(error){
+
+
+      console.log(error);
+
+
+      alert(
+        "Availability update failed"
+      );
+
+
+    }
+
+
+  };
+
+
+
+
+
+
+
+
+
+  const updateStatus = async(
+    bookingId,
+    status
+  )=>{
+
+
+    try{
+
+
+      await api.put(
+
+        `/api/bookings/${bookingId}/status/${status}`
+
       );
 
 
@@ -147,21 +226,15 @@ function MechanicDashboard() {
 
 
 
-      loadBookings(mechanicId);
-
+      loadBookings(
+        mechanicId
+      );
 
 
     }
     catch(error){
 
-
-      console.error(error);
-
-
-      alert(
-        "Failed to update status"
-      );
-
+      console.log(error);
 
     }
 
@@ -172,24 +245,67 @@ function MechanicDashboard() {
 
 
 
-  const pendingBookings =
-  bookings.filter(
-    b=>b.status==="PENDING"
-  );
 
+
+
+  const pendingBookings =
+    bookings.filter(
+      b=>b.status==="PENDING"
+    );
 
 
   const acceptedBookings =
-  bookings.filter(
-    b=>b.status==="ACCEPTED"
-  );
-
+    bookings.filter(
+      b=>b.status==="ACCEPTED"
+    );
 
 
   const rejectedBookings =
-  bookings.filter(
-    b=>b.status==="REJECTED"
-  );
+    bookings.filter(
+      b=>b.status==="REJECTED"
+    );
+
+
+  const completedBookings =
+    bookings.filter(
+      b=>b.status==="COMPLETED"
+    );
+
+
+
+
+
+
+
+
+
+  const getBadgeClass=(status)=>{
+
+
+    switch(status){
+
+
+      case "ACCEPTED":
+        return "bg-success";
+
+
+      case "REJECTED":
+        return "bg-danger";
+
+
+      case "COMPLETED":
+        return "bg-primary";
+
+
+      default:
+        return "bg-warning text-dark";
+
+
+    }
+
+
+  };
+
 
 
 
@@ -201,358 +317,418 @@ function MechanicDashboard() {
   const BookingCard=({booking})=>(
 
 
-<div className="col-lg-4 col-md-6 mb-4">
+    <div className="col-lg-4 col-md-6 mb-4">
 
 
-<div className="card shadow border-0 h-100"
-style={{
-borderRadius:"20px"
-}}
->
+      <div
+        className="card shadow-lg border-0 h-100"
+        style={{
+          borderRadius:"20px"
+        }}
+      >
 
 
-<div className="card-body">
+        <div className="card-body">
 
 
+          <h4 className="fw-bold text-primary">
+            👤 {booking.customerName}
+          </h4>
 
-<h4 className="text-primary fw-bold">
 
-👤 {booking.customerName || "Unknown"}
 
-</h4>
+          <p>
+            <FaPhone className="me-2 text-success"/>
+            {booking.customerPhone}
+          </p>
 
 
 
+          <p>
+            <FaEnvelope className="me-2 text-primary"/>
+            {booking.customerEmail}
+          </p>
 
-<p>
-<FaPhone className="text-success me-2"/>
-{booking.customerPhone || "Not Provided"}
-</p>
 
 
+          <p>
+            <FaTools className="me-2 text-warning"/>
+            {booking.serviceType}
+          </p>
 
 
-<p>
-<FaTools className="text-warning me-2"/>
-{booking.serviceType}
-</p>
 
+          <p>
+            <FaCalendarAlt className="me-2 text-info"/>
+            {booking.bookingDate}
+          </p>
 
 
 
-<p>
-<FaCalendarAlt className="text-info me-2"/>
-{booking.bookingDate}
-</p>
 
+          <span
+            className={
+              `badge ${getBadgeClass(
+                booking.status
+              )} fs-6`
+            }
+          >
 
+            {booking.status}
 
+          </span>
 
-<span
-className={
-booking.status==="ACCEPTED"
-?
-"badge bg-success fs-6"
-:
-booking.status==="REJECTED"
-?
-"badge bg-danger fs-6"
-:
-"badge bg-warning fs-6"
-}
->
 
-{booking.status}
 
-</span>
 
 
+          {
+            booking.status==="PENDING" &&
 
+            <div className="mt-3">
 
+              <button
+                className="btn btn-success me-2"
+                onClick={()=>
+                  updateStatus(
+                    booking.id,
+                    "ACCEPTED"
+                  )
+                }
+              >
+                Accept
+              </button>
 
-{
-booking.status==="PENDING" &&
 
-<div className="mt-3">
+              <button
+                className="btn btn-danger"
+                onClick={()=>
+                  updateStatus(
+                    booking.id,
+                    "REJECTED"
+                  )
+                }
+              >
+                Reject
+              </button>
 
 
-<button
-className="btn btn-success me-2"
-onClick={()=>
-updateStatus(
-booking.id,
-"ACCEPTED"
-)
-}
->
-Accept
-</button>
+            </div>
 
+          }
 
 
-<button
-className="btn btn-danger"
-onClick={()=>
-updateStatus(
-booking.id,
-"REJECTED"
-)
-}
->
-Reject
-</button>
 
 
 
-</div>
 
-}
+          {
+            booking.status==="ACCEPTED" &&
 
 
+            <button
+              className="btn btn-primary mt-3"
+              onClick={()=>
+                updateStatus(
+                  booking.id,
+                  "COMPLETED"
+                )
+              }
+            >
 
+              Mark Completed
 
+            </button>
 
-</div>
+          }
 
-</div>
 
 
-</div>
+        </div>
 
 
-);
+      </div>
 
 
+    </div>
 
 
+  );
 
 
 
-return (
 
 
-<div className="container py-5">
 
 
 
-<h1 className="text-center text-primary fw-bold mb-5">
 
-🚗 Mechanic Dashboard
+  if(loading){
 
-</h1>
 
+    return (
 
+      <div className="container py-5 text-center">
 
+        <h3>
+          Loading dashboard...
+        </h3>
 
+      </div>
 
+    );
 
-<div className="row mb-5">
+  }
 
 
 
-<div className="col-md-4">
 
-<div className="card shadow p-4 text-center">
 
 
-<FaClock
-size={40}
-className="mx-auto text-warning"
-/>
 
 
-<h2>
-{pendingBookings.length}
-</h2>
 
+  return (
 
-<h5>
-Incoming Requests
-</h5>
 
+    <div className="container py-5">
 
-</div>
 
-</div>
 
+      <h1 className="text-center text-primary fw-bold mb-4">
 
+        🚗 Mechanic Dashboard
 
+      </h1>
 
 
 
-<div className="col-md-4">
 
-<div className="card shadow p-4 text-center">
 
 
-<FaCheckCircle
-size={40}
-className="mx-auto text-success"
-/>
+      {/* Availability */}
 
+      <div className="text-center mb-5">
 
-<h2>
-{acceptedBookings.length}
-</h2>
 
+        {
+          available
 
-<h5>
-Accepted Requests
-</h5>
+          ?
 
+          <button
+            className="btn btn-success btn-lg"
+            onClick={()=>
+              changeAvailability(false)
+            }
+          >
 
-</div>
+            <FaPowerOff/>
+            &nbsp;
+            Online - Go Offline
 
-</div>
+          </button>
 
 
+          :
 
 
+          <button
+            className="btn btn-danger btn-lg"
+            onClick={()=>
+              changeAvailability(true)
+            }
+          >
 
+            <FaPowerOff/>
+            &nbsp;
+            Offline - Go Online
 
+          </button>
 
-<div className="col-md-4">
 
-<div className="card shadow p-4 text-center">
+        }
 
 
-<FaTimesCircle
-size={40}
-className="mx-auto text-danger"
-/>
+      </div>
 
 
-<h2>
-{rejectedBookings.length}
-</h2>
 
 
-<h5>
-Rejected Requests
-</h5>
 
 
-</div>
 
-</div>
+      <div className="row mb-5">
 
 
+        <div className="col-md-3 mb-3">
 
+          <div className="card shadow p-4 text-center">
 
-</div>
+            <FaClock size={40}/>
 
+            <h2>
+              {pendingBookings.length}
+            </h2>
 
+            <h5>
+              Incoming
+            </h5>
 
+          </div>
 
+        </div>
 
 
 
 
 
-<h3>
-🕒 Incoming Requests
-</h3>
+        <div className="col-md-3 mb-3">
 
+          <div className="card shadow p-4 text-center">
 
-<div className="row">
+            <FaCheckCircle size={40}/>
 
-{
+            <h2>
+              {acceptedBookings.length}
+            </h2>
 
-pendingBookings.length===0
+            <h5>
+              Accepted
+            </h5>
 
-?
+          </div>
 
-<p>No incoming requests</p>
+        </div>
 
-:
 
-pendingBookings.map(
-booking=>
 
-<BookingCard
-key={booking.id}
-booking={booking}
-/>
 
-)
 
-}
+        <div className="col-md-3 mb-3">
 
+          <div className="card shadow p-4 text-center">
 
-</div>
+            <FaTimesCircle size={40}/>
 
+            <h2>
+              {rejectedBookings.length}
+            </h2>
 
+            <h5>
+              Rejected
+            </h5>
 
+          </div>
 
+        </div>
 
 
 
-<h3 className="mt-5">
-✅ Accepted Requests
-</h3>
 
 
-<div className="row">
+        <div className="col-md-3 mb-3">
 
+          <div className="card shadow p-4 text-center">
 
-{
+            <FaClipboardCheck size={40}/>
 
-acceptedBookings.map(
-booking=>
+            <h2>
+              {completedBookings.length}
+            </h2>
 
-<BookingCard
-key={booking.id}
-booking={booking}
-/>
+            <h5>
+              Completed
+            </h5>
 
-)
+          </div>
 
-}
+        </div>
 
 
-</div>
 
+      </div>
 
 
 
 
 
 
-<h3 className="mt-5">
-❌ Rejected Requests
-</h3>
 
+      <h3>
+        🕒 Incoming Requests
+      </h3>
 
-<div className="row">
 
+      <div className="row">
 
-{
+        {
+          pendingBookings.map(
+            b=>
+            <BookingCard
+              key={b.id}
+              booking={b}
+            />
+          )
+        }
 
-rejectedBookings.map(
-booking=>
+      </div>
 
-<BookingCard
-key={booking.id}
-booking={booking}
-/>
 
-)
 
-}
 
 
-</div>
 
+      <h3 className="mt-5">
+        ✅ Accepted Jobs
+      </h3>
 
 
+      <div className="row">
 
+        {
+          acceptedBookings.map(
+            b=>
+            <BookingCard
+              key={b.id}
+              booking={b}
+            />
+          )
+        }
 
+      </div>
 
-</div>
 
 
-);
 
+
+
+
+      <h3 className="mt-5">
+        🏁 Completed Jobs
+      </h3>
+
+
+      <div className="row">
+
+        {
+          completedBookings.map(
+            b=>
+            <BookingCard
+              key={b.id}
+              booking={b}
+            />
+          )
+        }
+
+      </div>
+
+
+
+    </div>
+
+
+  );
 
 
 }
