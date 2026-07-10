@@ -12,6 +12,11 @@ import {
 import api from "../services/api";
 
 function Mechanics() {
+
+  const user = JSON.parse(
+    localStorage.getItem("user")
+  );
+
   const [mechanics, setMechanics] = useState([]);
   const [keyword, setKeyword] = useState("");
 
@@ -30,12 +35,15 @@ function Mechanics() {
   };
 
   const searchMechanics = () => {
+
     if (keyword.trim() === "") {
       loadMechanics();
       return;
     }
 
-    api.get(`/api/mechanics/search?keyword=${keyword}`)
+    api.get(
+      `/api/mechanics/search?keyword=${keyword}`
+    )
       .then((response) => {
         setMechanics(response.data);
       })
@@ -45,11 +53,19 @@ function Mechanics() {
   };
 
   const deleteMechanic = async (id) => {
-    if (!window.confirm("Delete this mechanic?")) return;
+
+    if (!window.confirm(
+      "Delete this mechanic?"
+    )) return;
 
     try {
-      await api.delete(`/api/mechanics/${id}`);
+
+      await api.delete(
+        `/api/mechanics/${id}`
+      );
+
       loadMechanics();
+
     } catch (error) {
       console.error(error);
     }
@@ -59,26 +75,34 @@ function Mechanics() {
     <div className="container py-5">
 
       <div className="d-flex justify-content-between align-items-center mb-4">
+
         <h1 className="fw-bold text-primary">
           🚗 SkillConnect Mechanics
         </h1>
 
-        <Link to="/add-mechanic">
-          <button className="btn btn-primary">
-            <FaPlus /> Add Mechanic
-          </button>
-        </Link>
+        {/* ADMIN ONLY */}
+        {user?.role === "ADMIN" && (
+          <Link to="/add-mechanic">
+            <button className="btn btn-primary">
+              <FaPlus /> Add Mechanic
+            </button>
+          </Link>
+        )}
+
       </div>
 
       <div className="card shadow p-3 mb-5">
         <div className="row">
+
           <div className="col-md-10">
             <input
               type="text"
               className="form-control"
               placeholder="Search by name, city or specialization"
               value={keyword}
-              onChange={(e) => setKeyword(e.target.value)}
+              onChange={(e) =>
+                setKeyword(e.target.value)
+              }
             />
           </div>
 
@@ -90,19 +114,26 @@ function Mechanics() {
               <FaSearch /> Search
             </button>
           </div>
+
         </div>
       </div>
 
       <div className="row">
+
         {mechanics.map((mechanic) => (
+
           <div
             className="col-lg-4 col-md-6 mb-4"
             key={mechanic.id}
           >
+
             <div
               className="card shadow-lg border-0 h-100"
-              style={{ borderRadius: "20px" }}
+              style={{
+                borderRadius: "20px"
+              }}
             >
+
               <div className="card-body">
 
                 <h4 className="fw-bold text-primary">
@@ -130,27 +161,51 @@ function Mechanics() {
 
                 <div className="mt-4">
 
-                  <Link to={`/edit-mechanic/${mechanic.id}`}>
-                    <button className="btn btn-warning me-2">
-                      <FaEdit /> Edit
-                    </button>
-                  </Link>
+                  {/* CUSTOMER */}
+                  {user?.role === "CUSTOMER" && (
+                    <Link
+                      to={`/mechanics/${mechanic.id}`}
+                    >
+                      <button className="btn btn-primary">
+                        View Details
+                      </button>
+                    </Link>
+                  )}
 
-                  <button
-                    className="btn btn-danger"
-                    onClick={() =>
-                      deleteMechanic(mechanic.id)
-                    }
-                  >
-                    <FaTrash /> Delete
-                  </button>
+                  {/* ADMIN */}
+                  {user?.role === "ADMIN" && (
+                    <>
+                      <Link
+                        to={`/edit-mechanic/${mechanic.id}`}
+                      >
+                        <button className="btn btn-warning me-2">
+                          <FaEdit /> Edit
+                        </button>
+                      </Link>
+
+                      <button
+                        className="btn btn-danger"
+                        onClick={() =>
+                          deleteMechanic(
+                            mechanic.id
+                          )
+                        }
+                      >
+                        <FaTrash /> Delete
+                      </button>
+                    </>
+                  )}
 
                 </div>
 
               </div>
+
             </div>
+
           </div>
+
         ))}
+
       </div>
 
     </div>

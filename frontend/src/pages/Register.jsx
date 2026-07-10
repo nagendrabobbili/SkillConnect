@@ -1,8 +1,10 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import api from "../services/api";
 
 function Register() {
+
+  const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
     name: "",
@@ -11,15 +13,31 @@ function Register() {
     role: "CUSTOMER"
   });
 
+
   const handleChange = (e) => {
+
     setFormData({
       ...formData,
       [e.target.name]: e.target.value
     });
+
   };
 
+
   const handleSubmit = async (e) => {
+
     e.preventDefault();
+
+
+    // Redirect mechanic registration
+    if(formData.role === "MECHANIC"){
+
+      navigate("/join-mechanic");
+
+      return;
+
+    }
+
 
     try {
 
@@ -28,51 +46,66 @@ function Register() {
         formData
       );
 
+
       console.log(response.data);
 
       alert("Registration Successful!");
 
+
       setFormData({
-        name: "",
-        email: "",
-        password: "",
-        role: "CUSTOMER"
+        name:"",
+        email:"",
+        password:"",
+        role:"CUSTOMER"
       });
 
-    } catch (error) {
+
+    } catch(error){
 
       console.error(error);
 
       alert("Registration Failed");
+
     }
+
   };
 
+
   return (
+
     <div
       className="d-flex justify-content-center align-items-center"
       style={{
-        minHeight: "100vh",
-        background: "linear-gradient(135deg, #198754, #0d6efd)"
+        minHeight:"100vh",
+        background:"linear-gradient(135deg,#198754,#0d6efd)"
       }}
     >
+
       <div
         className="card shadow-lg p-5 border-0"
         style={{
-          width: "500px",
-          borderRadius: "20px"
+          width:"500px",
+          borderRadius:"20px"
         }}
       >
+
+
         <h1 className="text-center text-success mb-4">
           🚗 SkillConnect
         </h1>
+
 
         <h3 className="text-center mb-4">
           Create Account
         </h3>
 
+
+
         <form onSubmit={handleSubmit}>
 
+
           <div className="mb-3">
+
             <label>Name</label>
 
             <input
@@ -84,9 +117,13 @@ function Register() {
               onChange={handleChange}
               required
             />
+
           </div>
 
+
+
           <div className="mb-3">
+
             <label>Email</label>
 
             <input
@@ -98,9 +135,13 @@ function Register() {
               onChange={handleChange}
               required
             />
+
           </div>
 
+
+
           <div className="mb-3">
+
             <label>Password</label>
 
             <input
@@ -112,9 +153,13 @@ function Register() {
               onChange={handleChange}
               required
             />
+
           </div>
 
+
+
           <div className="mb-4">
+
             <label>Role</label>
 
             <select
@@ -123,10 +168,25 @@ function Register() {
               value={formData.role}
               onChange={handleChange}
             >
-              <option value="CUSTOMER">Customer</option>
-              <option value="MECHANIC">Mechanic</option>
+
+              <option value="CUSTOMER">
+                Customer
+              </option>
+
+              <option value="MECHANIC">
+                Mechanic
+              </option>
+
+              <option value="ADMIN">
+                Admin
+              </option>
+
+
             </select>
+
           </div>
+
+
 
           <button
             className="btn btn-success w-100"
@@ -135,16 +195,29 @@ function Register() {
             Register
           </button>
 
+
         </form>
 
+
+
         <p className="text-center mt-4">
+
           Already have an account?
-          <Link to="/login"> Login</Link>
+
+          <Link to="/login">
+            {" "}Login
+          </Link>
+
         </p>
 
+
+
       </div>
+
     </div>
+
   );
+
 }
 
 export default Register;

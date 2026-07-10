@@ -11,6 +11,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 
     List<Booking> findByCustomerPhone(String customerPhone);
 
-    List<Booking> findByMechanicId(Long mechanicId);
+    List<Booking> findByCustomerEmail(String customerEmail);
 
+    List<Booking> findByMechanicId(Long mechanicId);
 }

@@ -11,56 +11,65 @@ public class BookingService {
 
     private final BookingRepository bookingRepository;
 
+    public BookingService(
+            BookingRepository bookingRepository) {
 
-    public BookingService(BookingRepository bookingRepository) {
         this.bookingRepository = bookingRepository;
     }
 
-
-    // Get all bookings
     public List<Booking> getAllBookings() {
         return bookingRepository.findAll();
     }
 
-
-    // Create booking
     public Booking saveBooking(Booking booking) {
         return bookingRepository.save(booking);
     }
 
-
-    // Get booking by id
     public Booking getBookingById(Long id) {
 
         return bookingRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Booking not found"));
+                .orElseThrow(() ->
+                        new RuntimeException(
+                                "Booking not found"));
     }
 
-
-    // Delete booking
     public void deleteBooking(Long id) {
         bookingRepository.deleteById(id);
     }
-    // Get bookings by customer phone
-public List<Booking> getBookingsByCustomerPhone(String phone) {
 
-    return bookingRepository.findByCustomerPhone(phone);
+    public List<Booking> getBookingsByCustomerPhone(
+            String phone) {
 
-}
-// Get bookings for mechanic
-public List<Booking> getBookingsByMechanic(Long mechanicId) {
+        return bookingRepository
+                .findByCustomerPhone(phone);
+    }
 
-    return bookingRepository.findByMechanicId(mechanicId);
+    public List<Booking> getBookingsByCustomerEmail(
+            String email) {
 
-}
-// Update booking status
-public Booking updateBookingStatus(Long id, String status) {
+        return bookingRepository
+                .findByCustomerEmail(email);
+    }
 
-    Booking booking = bookingRepository.findById(id)
-            .orElseThrow(() -> new RuntimeException("Booking not found"));
+    public List<Booking> getBookingsByMechanic(
+            Long mechanicId) {
 
-    booking.setStatus(status);
+        return bookingRepository
+                .findByMechanicId(mechanicId);
+    }
 
-    return bookingRepository.save(booking);
-}
+    public Booking updateBookingStatus(
+            Long id,
+            String status) {
+
+        Booking booking =
+                bookingRepository.findById(id)
+                        .orElseThrow(() ->
+                                new RuntimeException(
+                                        "Booking not found"));
+
+        booking.setStatus(status);
+
+        return bookingRepository.save(booking);
+    }
 }

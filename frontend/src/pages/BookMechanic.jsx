@@ -6,9 +6,13 @@ function BookMechanic() {
 
   const { id } = useParams();
 
+  const user = JSON.parse(
+    localStorage.getItem("user")
+  );
+
   const [booking, setBooking] = useState({
-    customerName: "",
-    customerPhone: "",
+    customerName: user.name,
+    customerEmail: user.email,
     serviceType: "",
     bookingDate: "",
     status: "PENDING",
@@ -17,66 +21,52 @@ function BookMechanic() {
     }
   });
 
-
   const handleChange = (e) => {
-
     setBooking({
       ...booking,
       [e.target.name]: e.target.value
     });
-
   };
-
 
   const submitBooking = async (e) => {
 
     e.preventDefault();
 
-
     try {
 
-      await api.post("/api/bookings", booking);
+      await api.post(
+        "/api/bookings",
+        booking
+      );
 
-      alert("Booking Created Successfully!");
+      alert(
+        "Booking Created Successfully!"
+      );
 
-    }
-    catch(error) {
+    } catch(error) {
 
       console.error(error);
+
       alert("Booking Failed");
-
     }
-
   };
 
-
   return (
-
     <div style={{padding:"20px"}}>
 
       <h1>📅 Book Mechanic</h1>
 
-
       <form onSubmit={submitBooking}>
 
+        <p>
+          Customer:
+          <strong> {user.name}</strong>
+        </p>
 
-        <input
-          name="customerName"
-          placeholder="Your Name"
-          onChange={handleChange}
-        />
-
-        <br/><br/>
-
-
-        <input
-          name="customerPhone"
-          placeholder="Phone Number"
-          onChange={handleChange}
-        />
-
-        <br/><br/>
-
+        <p>
+          Email:
+          <strong> {user.email}</strong>
+        </p>
 
         <input
           name="serviceType"
@@ -86,7 +76,6 @@ function BookMechanic() {
 
         <br/><br/>
 
-
         <input
           type="date"
           name="bookingDate"
@@ -95,20 +84,14 @@ function BookMechanic() {
 
         <br/><br/>
 
-
         <button type="submit">
           Confirm Booking
         </button>
 
-
       </form>
 
-
     </div>
-
   );
-
 }
-
 
 export default BookMechanic;

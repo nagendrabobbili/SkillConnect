@@ -12,6 +12,7 @@ import MyBookings from "./pages/MyBookings";
 import MechanicDashboard from "./pages/MechanicDashboard";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import AdminDashboard from "./pages/AdminDashboard";
 
 function App() {
   return (
@@ -29,6 +30,7 @@ function App() {
         <Route path="/mechanics" element={<Mechanics />} />
         <Route path="/mechanics/:id" element={<MechanicDetails />} />
         <Route path="/add-mechanic" element={<AddMechanic />} />
+        <Route path="/join-mechanic" element={<AddMechanic />} />
         <Route path="/edit-mechanic/:id" element={<AddMechanic />} />
 
         {/* Map */}
@@ -51,6 +53,10 @@ function App() {
           path="/mechanic-dashboard"
           element={<MechanicDashboard />}
         />
+        <Route 
+ path="/admin"
+ element={<AdminDashboard/>}
+/>
 
         {/* Authentication */}
         <Route path="/login" element={<Login />} />

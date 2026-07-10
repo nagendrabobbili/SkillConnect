@@ -34,10 +34,10 @@ function Login() {
       console.log(response.data);
 
       if (response.data.role === "MECHANIC") {
-        navigate("/mechanic-dashboard");
-      } else {
-        navigate("/");
-      }
+  window.location.href = "/mechanic-dashboard";
+} else {
+  window.location.href = "/";
+}
 
     } catch (error) {
 

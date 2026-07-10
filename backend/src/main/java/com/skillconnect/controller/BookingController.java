@@ -50,6 +50,13 @@ public List<Booking> getCustomerBookings(
     return bookingService.getBookingsByCustomerPhone(phone);
 
 }
+@GetMapping("/customer/email/{email}")
+public List<Booking> getCustomerBookingsByEmail(
+        @PathVariable String email) {
+
+    return bookingService
+            .getBookingsByCustomerEmail(email);
+}
 
 
 

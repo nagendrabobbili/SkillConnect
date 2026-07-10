@@ -7,6 +7,11 @@ import {
 } from "react-icons/fa";
 
 function Home() {
+
+  const user = JSON.parse(
+    localStorage.getItem("user")
+  );
+
   return (
     <div>
 
@@ -33,19 +38,62 @@ function Home() {
             bike, car and vehicle services.
           </p>
 
-          <Link to="/mechanics">
-            <button className="btn btn-light btn-lg px-5 me-3">
-              <FaSearch className="me-2" />
-              Find Mechanics
-            </button>
-          </Link>
+          {/* CUSTOMER OR GUEST */}
+          {/* CUSTOMER */}
+{user?.role === "CUSTOMER" && (
+  <Link to="/mechanics">
+    <button className="btn btn-light btn-lg px-5 me-3">
+      <FaSearch className="me-2" />
+      Find Mechanics
+    </button>
+  </Link>
+)}
 
-          <Link to="/add-mechanic">
-            <button className="btn btn-warning btn-lg px-5">
-              <FaTools className="me-2" />
-              Join as Mechanic
-            </button>
-          </Link>
+{/* GUEST */}
+{!user && (
+  <>
+    <Link to="/mechanics">
+      <button className="btn btn-light btn-lg px-5 me-3">
+        <FaSearch className="me-2" />
+        Find Mechanics
+      </button>
+    </Link>
+
+    <Link to="/register">
+      <button className="btn btn-warning btn-lg px-5">
+        <FaTools className="me-2" />
+        Join as Mechanic
+      </button>
+    </Link>
+  </>
+)}
+
+          {/* ADMIN */}
+          {user?.role === "ADMIN" && (
+            <>
+              <Link to="/mechanics">
+                <button className="btn btn-light btn-lg px-5 me-3">
+                  Manage Mechanics
+                </button>
+              </Link>
+
+              <Link to="/add-mechanic">
+                <button className="btn btn-warning btn-lg px-5">
+                  Add Mechanic
+                </button>
+              </Link>
+            </>
+          )}
+
+          {/* MECHANIC */}
+          {user?.role === "MECHANIC" && (
+            <Link to="/mechanic-dashboard">
+              <button className="btn btn-warning btn-lg px-5">
+                Open Dashboard
+              </button>
+            </Link>
+          )}
+
         </div>
       </div>
 
