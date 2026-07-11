@@ -24,9 +24,17 @@ public class User {
 
     private String role;
 
+
+    // Admin can block/unblock customers
+    @Column(nullable = false)
+    private boolean blocked = false;
+
+
+
     public User() {
 
     }
+
 
     public Long getId() {
         return id;
@@ -37,6 +45,7 @@ public class User {
         this.id = id;
     }
 
+
     public String getName() {
         return name;
     }
@@ -45,6 +54,7 @@ public class User {
             String name) {
         this.name = name;
     }
+
 
     public String getPhone() {
         return phone;
@@ -55,6 +65,7 @@ public class User {
         this.phone = phone;
     }
 
+
     public String getEmail() {
         return email;
     }
@@ -63,6 +74,7 @@ public class User {
             String email) {
         this.email = email;
     }
+
 
     public String getPassword() {
         return password;
@@ -73,6 +85,7 @@ public class User {
         this.password = password;
     }
 
+
     public String getRole() {
         return role;
     }
@@ -80,5 +93,17 @@ public class User {
     public void setRole(
             String role) {
         this.role = role;
+    }
+
+
+
+    public boolean isBlocked() {
+        return blocked;
+    }
+
+
+    public void setBlocked(
+            boolean blocked) {
+        this.blocked = blocked;
     }
 }

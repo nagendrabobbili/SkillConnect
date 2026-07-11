@@ -76,7 +76,7 @@ function AdminDashboard() {
               className="mx-auto text-warning mb-3"
             />
 
-            <Link to="/customers">
+            <Link to="/admin/customers">
               <button className="btn btn-warning">
                 View Customers
               </button>
