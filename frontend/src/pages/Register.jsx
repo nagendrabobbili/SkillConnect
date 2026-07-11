@@ -8,11 +8,11 @@ function Register() {
 
   const [formData, setFormData] = useState({
     name: "",
+    phone: "",
     email: "",
     password: "",
     role: "CUSTOMER"
   });
-
 
   const handleChange = (e) => {
 
@@ -23,21 +23,17 @@ function Register() {
 
   };
 
-
   const handleSubmit = async (e) => {
 
     e.preventDefault();
 
-
     // Redirect mechanic registration
-    if(formData.role === "MECHANIC"){
+    if (formData.role === "MECHANIC") {
 
       navigate("/join-mechanic");
 
       return;
-
     }
-
 
     try {
 
@@ -46,63 +42,65 @@ function Register() {
         formData
       );
 
-
       console.log(response.data);
 
-      alert("Registration Successful!");
-
+      alert(
+        "Registration Successful!"
+      );
 
       setFormData({
-        name:"",
-        email:"",
-        password:"",
-        role:"CUSTOMER"
+        name: "",
+        phone: "",
+        email: "",
+        password: "",
+        role: "CUSTOMER"
       });
 
+      navigate("/login");
 
-    } catch(error){
+    }
+    catch (error) {
 
       console.error(error);
 
-      alert("Registration Failed");
+      alert(
+        "Registration Failed"
+      );
 
     }
 
   };
-
 
   return (
 
     <div
       className="d-flex justify-content-center align-items-center"
       style={{
-        minHeight:"100vh",
-        background:"linear-gradient(135deg,#198754,#0d6efd)"
+        minHeight: "100vh",
+        background:
+          "linear-gradient(135deg,#198754,#0d6efd)"
       }}
     >
 
       <div
         className="card shadow-lg p-5 border-0"
         style={{
-          width:"500px",
-          borderRadius:"20px"
+          width: "500px",
+          borderRadius: "20px"
         }}
       >
-
 
         <h1 className="text-center text-success mb-4">
           🚗 SkillConnect
         </h1>
 
-
         <h3 className="text-center mb-4">
           Create Account
         </h3>
 
-
-
         <form onSubmit={handleSubmit}>
 
+          {/* Name */}
 
           <div className="mb-3">
 
@@ -120,7 +118,25 @@ function Register() {
 
           </div>
 
+          {/* Phone Number */}
 
+          <div className="mb-3">
+
+            <label>Phone Number</label>
+
+            <input
+              type="tel"
+              name="phone"
+              className="form-control"
+              placeholder="Enter Phone Number"
+              value={formData.phone}
+              onChange={handleChange}
+              required
+            />
+
+          </div>
+
+          {/* Email */}
 
           <div className="mb-3">
 
@@ -130,15 +146,14 @@ function Register() {
               type="email"
               name="email"
               className="form-control"
-              placeholder="Enter Email"
+              placeholder="Enter Email (Optional)"
               value={formData.email}
               onChange={handleChange}
-              required
             />
 
           </div>
 
-
+          {/* Password */}
 
           <div className="mb-3">
 
@@ -156,7 +171,7 @@ function Register() {
 
           </div>
 
-
+          {/* Role */}
 
           <div className="mb-4">
 
@@ -181,12 +196,9 @@ function Register() {
                 Admin
               </option>
 
-
             </select>
 
           </div>
-
-
 
           <button
             className="btn btn-success w-100"
@@ -195,22 +207,18 @@ function Register() {
             Register
           </button>
 
-
         </form>
-
-
 
         <p className="text-center mt-4">
 
           Already have an account?
 
           <Link to="/login">
-            {" "}Login
+            {" "}
+            Login
           </Link>
 
         </p>
-
-
 
       </div>
 

@@ -9,14 +9,21 @@ import com.skillconnect.security.JwtUtil;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+
+
 @RestController
 @RequestMapping("/api/auth")
 @CrossOrigin(origins = "*")
 public class AuthController {
 
+
     private final UserRepository userRepository;
+
     private final PasswordEncoder passwordEncoder;
+
     private final JwtUtil jwtUtil;
+
+
 
     public AuthController(
             UserRepository userRepository,
@@ -25,60 +32,123 @@ public class AuthController {
     ) {
 
         this.userRepository = userRepository;
+
         this.passwordEncoder = passwordEncoder;
+
         this.jwtUtil = jwtUtil;
+
     }
+
+
+
 
     @PostMapping("/register")
     public User register(
             @RequestBody User user
     ) {
 
+
         user.setPassword(
+
                 passwordEncoder.encode(
                         user.getPassword()
                 )
+
         );
 
+
         return userRepository.save(user);
+
     }
+
+
+
+
+
 
     @PostMapping("/login")
     public LoginResponse login(
             @RequestBody LoginRequest request
     ) {
 
+
+
         User user = userRepository
-                .findByEmail(
-                        request.getEmail()
+
+                .findByEmailOrPhone(
+                        request.getUsername(),
+                        request.getUsername()
                 )
-                .orElseThrow(() ->
-                        new RuntimeException(
+
+                .orElseThrow(
+
+                        () -> new RuntimeException(
                                 "User not found"
                         )
+
                 );
 
+
+
+
+
         if (!passwordEncoder.matches(
+
                 request.getPassword(),
+
                 user.getPassword()
+
         )) {
+
 
             throw new RuntimeException(
                     "Invalid password"
             );
+
+
         }
 
+
+
+
+
+
+        // JWT subject should always contain email
+        String principal = user.getEmail();
+
+
+
+
+
         String token =
+
                 jwtUtil.generateToken(
-                        user.getEmail(),
+
+                        principal,
+
                         user.getRole()
+
                 );
 
+
+
+
+
+
         return new LoginResponse(
+
                 token,
+
                 user.getName(),
-                user.getEmail(),
+
+                user.getPhone(),
+
                 user.getRole()
+
         );
+
+
     }
+
+
 }

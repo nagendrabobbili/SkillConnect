@@ -7,9 +7,13 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+
 import org.springframework.security.core.context.SecurityContextHolder;
+
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
+
 import org.springframework.stereotype.Component;
+
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import io.jsonwebtoken.Claims;
@@ -17,17 +21,24 @@ import io.jsonwebtoken.Claims;
 import java.io.IOException;
 import java.util.Collections;
 
+
 @Component
 public class JwtAuthenticationFilter
         extends OncePerRequestFilter {
 
+
     private final JwtUtil jwtUtil;
 
+
     public JwtAuthenticationFilter(
-            JwtUtil jwtUtil) {
+            JwtUtil jwtUtil
+    ) {
 
         this.jwtUtil = jwtUtil;
+
     }
+
+
 
     @Override
     protected void doFilterInternal(
@@ -36,66 +47,147 @@ public class JwtAuthenticationFilter
             FilterChain filterChain
     ) throws ServletException, IOException {
 
+
         final String authHeader =
                 request.getHeader("Authorization");
 
+
         String token = null;
+
         String email = null;
+
         String role = null;
 
-        // Check Authorization header
+
+
+        // Check JWT Authorization header
+
         if (authHeader != null &&
                 authHeader.startsWith("Bearer ")) {
 
-            token = authHeader.substring(7);
+
+            token =
+                    authHeader.substring(7);
+
 
             try {
+
 
                 email =
                         jwtUtil.extractEmail(token);
 
+
                 role =
                         jwtUtil.extractRole(token);
 
-            } catch (Exception e) {
+
+
+            }
+            catch (Exception e) {
+
 
                 System.out.println(
                         "Invalid JWT Token: "
                                 + e.getMessage()
                 );
+
+
             }
+
         }
 
-        // Authenticate user
+
+
+
+
+        // Authenticate request
+
         if (email != null &&
+
                 SecurityContextHolder
                         .getContext()
                         .getAuthentication() == null) {
 
+
+
+            String authority;
+
+
+            /*
+             * Prevent ROLE_ROLE_ADMIN issue
+             *
+             * If JWT already contains ROLE_ADMIN
+             * keep it.
+             *
+             * If JWT contains ADMIN
+             * add ROLE_ prefix.
+             */
+
+            if (role != null &&
+                    role.startsWith("ROLE_")) {
+
+                authority = role;
+
+            }
+            else {
+
+                authority =
+                        "ROLE_" + role;
+
+            }
+
+
+
+
             UsernamePasswordAuthenticationToken authToken =
+
                     new UsernamePasswordAuthenticationToken(
+
                             email,
+
                             null,
+
                             Collections.singletonList(
+
                                     new SimpleGrantedAuthority(
-                                            "ROLE_" + role
+                                            authority
                                     )
+
                             )
+
                     );
 
+
+
+
             authToken.setDetails(
+
                     new WebAuthenticationDetailsSource()
+
                             .buildDetails(request)
+
             );
 
+
+
+
             SecurityContextHolder
+
                     .getContext()
+
                     .setAuthentication(authToken);
+
         }
+
+
+
+
 
         filterChain.doFilter(
                 request,
                 response
         );
+
     }
+
 }

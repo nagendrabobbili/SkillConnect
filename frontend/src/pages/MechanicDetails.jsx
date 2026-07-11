@@ -43,7 +43,8 @@ function MechanicDetails() {
 
       setMechanic(response.data);
 
-    } catch (error) {
+    }
+    catch (error) {
 
       console.error(error);
 
@@ -61,21 +62,25 @@ function MechanicDetails() {
 
       setReviews(response.data);
 
-    } catch (error) {
+    }
+    catch (error) {
 
-      // reviews module may not exist yet
-      console.log("Reviews not available yet");
+      console.log(
+        "Reviews not available yet"
+      );
 
     }
 
   };
 
   if (!mechanic) {
+
     return (
       <h2 className="text-center mt-5">
         Loading...
       </h2>
     );
+
   }
 
   return (
@@ -94,6 +99,7 @@ function MechanicDetails() {
           <div className="d-flex justify-content-between align-items-center mb-4">
 
             <div>
+
               <h1 className="text-primary fw-bold">
                 🚗 {mechanic.fullName}
               </h1>
@@ -101,22 +107,44 @@ function MechanicDetails() {
               <h5 className="text-muted">
                 {mechanic.specialization}
               </h5>
+
             </div>
 
             <div>
+
               {
-                mechanic.available
-                ?
-                <span className="badge bg-success fs-6">
-                  <FaCheckCircle className="me-2"/>
-                  Available
-                </span>
-                :
-                <span className="badge bg-danger fs-6">
-                  <FaTimesCircle className="me-2"/>
-                  Busy
-                </span>
+                mechanic.availabilityStatus === "AVAILABLE" && (
+
+                  <span className="badge bg-success fs-6">
+                    <FaCheckCircle className="me-2" />
+                    Available
+                  </span>
+
+                )
               }
+
+              {
+                mechanic.availabilityStatus === "BUSY" && (
+
+                  <span className="badge bg-warning text-dark fs-6">
+                    <FaTools className="me-2" />
+                    Busy
+                  </span>
+
+                )
+              }
+
+              {
+                mechanic.availabilityStatus === "OFFLINE" && (
+
+                  <span className="badge bg-danger fs-6">
+                    <FaTimesCircle className="me-2" />
+                    Offline
+                  </span>
+
+                )
+              }
+
             </div>
 
           </div>
@@ -128,23 +156,20 @@ function MechanicDetails() {
             <div className="col-md-6">
 
               <p>
-                <FaPhone className="text-success me-2"/>
-                <strong>Phone:</strong>
-                {" "}
+                <FaPhone className="text-success me-2" />
+                <strong>Phone:</strong>{" "}
                 {mechanic.phone}
               </p>
 
               <p>
-                <FaEnvelope className="text-primary me-2"/>
-                <strong>Email:</strong>
-                {" "}
+                <FaEnvelope className="text-primary me-2" />
+                <strong>Email:</strong>{" "}
                 {mechanic.email}
               </p>
 
               <p>
-                <FaTools className="text-warning me-2"/>
-                <strong>Specialization:</strong>
-                {" "}
+                <FaTools className="text-warning me-2" />
+                <strong>Specialization:</strong>{" "}
                 {mechanic.specialization}
               </p>
 
@@ -153,23 +178,20 @@ function MechanicDetails() {
             <div className="col-md-6">
 
               <p>
-                <FaBriefcase className="text-info me-2"/>
-                <strong>Experience:</strong>
-                {" "}
+                <FaBriefcase className="text-info me-2" />
+                <strong>Experience:</strong>{" "}
                 {mechanic.experience} Years
               </p>
 
               <p>
-                <FaMapMarkerAlt className="text-danger me-2"/>
-                <strong>City:</strong>
-                {" "}
+                <FaMapMarkerAlt className="text-danger me-2" />
+                <strong>City:</strong>{" "}
                 {mechanic.city}
               </p>
 
               <p>
-                <FaMapMarkerAlt className="text-danger me-2"/>
-                <strong>Address:</strong>
-                {" "}
+                <FaMapMarkerAlt className="text-danger me-2" />
+                <strong>Address:</strong>{" "}
                 {mechanic.address}
               </p>
 
@@ -196,16 +218,32 @@ function MechanicDetails() {
 
             {
               user?.role === "CUSTOMER" &&
-              mechanic.available && (
+              mechanic.availabilityStatus !== "OFFLINE" && (
 
                 <Link
                   to={`/book-mechanic/${mechanic.id}`}
                 >
                   <button className="btn btn-success btn-lg">
-                    <FaCalendarAlt className="me-2"/>
+
+                    <FaCalendarAlt className="me-2" />
+
                     Book Mechanic
+
                   </button>
                 </Link>
+
+              )
+            }
+
+            {
+              mechanic.availabilityStatus === "OFFLINE" && (
+
+                <button
+                  className="btn btn-secondary btn-lg"
+                  disabled
+                >
+                  Mechanic is Offline
+                </button>
 
               )
             }
@@ -220,8 +258,11 @@ function MechanicDetails() {
                   rel="noreferrer"
                 >
                   <button className="btn btn-primary btn-lg">
-                    <FaMapMarkedAlt className="me-2"/>
+
+                    <FaMapMarkedAlt className="me-2" />
+
                     View Location
+
                   </button>
                 </a>
 
@@ -249,35 +290,33 @@ function MechanicDetails() {
 
           {
             reviews.length === 0
-            ?
-            <p>
-              No reviews yet.
-            </p>
-            :
-            reviews.map(review => (
+              ?
+              <p>
+                No reviews yet.
+              </p>
+              :
+              reviews.map(review => (
 
-              <div
-                key={review.id}
-                className="border rounded p-3 mb-3"
-              >
+                <div
+                  key={review.id}
+                  className="border rounded p-3 mb-3"
+                >
 
-                <h5>
-                  {review.customerName}
-                </h5>
+                  <h5>
+                    {review.customerName}
+                  </h5>
 
-                <p>
-                  Rating:
-                  {" "}
-                  ⭐ {review.rating}/5
-                </p>
+                  <p>
+                    Rating: ⭐ {review.rating}/5
+                  </p>
 
-                <p>
-                  {review.comment}
-                </p>
+                  <p>
+                    {review.comment}
+                  </p>
 
-              </div>
+                </div>
 
-            ))
+              ))
           }
 
         </div>

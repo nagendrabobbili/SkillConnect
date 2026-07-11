@@ -2,27 +2,28 @@ package com.skillconnect.dto;
 
 public class LoginRequest {
 
-    private String email;
+    // Can be email or phone number
+    private String username;
 
     private String password;
 
-
-    public String getEmail() {
-        return email;
+    public String getUsername() {
+        return username;
     }
 
+    public void setUsername(
+            String username) {
 
-    public void setEmail(String email) {
-        this.email = email;
+        this.username = username;
     }
-
 
     public String getPassword() {
         return password;
     }
 
+    public void setPassword(
+            String password) {
 
-    public void setPassword(String password) {
         this.password = password;
     }
 }

@@ -5,14 +5,20 @@ function ProtectedRoute({
   allowedRole
 }) {
 
-  const token =
-    localStorage.getItem("token");
+  const token = localStorage.getItem("token");
 
-  const user = JSON.parse(
-    localStorage.getItem("user")
-  );
+  let user = null;
 
-  // Not logged in
+  try {
+    user = JSON.parse(
+      localStorage.getItem("user")
+    );
+  } catch (error) {
+    console.log("Invalid user data");
+  }
+
+
+  // User not logged in
   if (!token || !user) {
 
     return (
@@ -24,7 +30,8 @@ function ProtectedRoute({
 
   }
 
-  // Wrong role trying to access page
+
+  // Role based protection
   if (
     allowedRole &&
     user.role !== allowedRole
@@ -38,6 +45,7 @@ function ProtectedRoute({
     );
 
   }
+
 
   return children;
 }

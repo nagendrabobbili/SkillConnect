@@ -11,18 +11,40 @@ public class Booking {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    // Customer Details
     private String customerName;
 
     private String customerEmail;
 
     private String customerPhone;
 
+    // Service Details
     private String serviceType;
 
+    private String issueDescription;
+
+    private String urgencyLevel; // EMERGENCY | NORMAL | SCHEDULED
+
+    // Schedule
     private LocalDate bookingDate;
 
+    private String preferredTime;
+
+    // Customer Location
+    private String customerAddress;
+
+    private Double customerLatitude;
+
+    private Double customerLongitude;
+
+    // Cost Details
+    private Double estimatedPrice;
+
+    // Booking Status
+    // PENDING | ACCEPTED | REJECTED | COMPLETED
     private String status;
 
+    // Mechanic Details
     @ManyToOne
     @JoinColumn(name = "mechanic_id")
     private Mechanic mechanic;
@@ -70,12 +92,68 @@ public class Booking {
         this.serviceType = serviceType;
     }
 
+    public String getIssueDescription() {
+        return issueDescription;
+    }
+
+    public void setIssueDescription(String issueDescription) {
+        this.issueDescription = issueDescription;
+    }
+
+    public String getUrgencyLevel() {
+        return urgencyLevel;
+    }
+
+    public void setUrgencyLevel(String urgencyLevel) {
+        this.urgencyLevel = urgencyLevel;
+    }
+
     public LocalDate getBookingDate() {
         return bookingDate;
     }
 
     public void setBookingDate(LocalDate bookingDate) {
         this.bookingDate = bookingDate;
+    }
+
+    public String getPreferredTime() {
+        return preferredTime;
+    }
+
+    public void setPreferredTime(String preferredTime) {
+        this.preferredTime = preferredTime;
+    }
+
+    public String getCustomerAddress() {
+        return customerAddress;
+    }
+
+    public void setCustomerAddress(String customerAddress) {
+        this.customerAddress = customerAddress;
+    }
+
+    public Double getCustomerLatitude() {
+        return customerLatitude;
+    }
+
+    public void setCustomerLatitude(Double customerLatitude) {
+        this.customerLatitude = customerLatitude;
+    }
+
+    public Double getCustomerLongitude() {
+        return customerLongitude;
+    }
+
+    public void setCustomerLongitude(Double customerLongitude) {
+        this.customerLongitude = customerLongitude;
+    }
+
+    public Double getEstimatedPrice() {
+        return estimatedPrice;
+    }
+
+    public void setEstimatedPrice(Double estimatedPrice) {
+        this.estimatedPrice = estimatedPrice;
     }
 
     public String getStatus() {
