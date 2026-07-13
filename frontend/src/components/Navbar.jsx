@@ -58,9 +58,12 @@ function Navbar() {
 
   };
 
+  // Updated Home Route Logic
   const homePath =
     user?.role === "ADMIN"
       ? "/admin"
+      : user?.role === "MECHANIC"
+      ? "/mechanic-home"
       : "/";
 
   return (
@@ -153,16 +156,20 @@ function Navbar() {
             {
               user?.role === "MECHANIC" && (
 
-                <li className="nav-item">
+                <>
 
-                  <Link
-                    className="nav-link"
-                    to="/mechanic-dashboard"
-                  >
-                    Dashboard
-                  </Link>
+                  <li className="nav-item">
 
-                </li>
+                    <Link
+                      className="nav-link"
+                      to="/mechanic-dashboard"
+                    >
+                      Dashboard
+                    </Link>
+
+                  </li>
+
+                </>
 
               )
             }

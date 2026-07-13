@@ -26,6 +26,7 @@ import AddReview from "./pages/AddReview";
 import CustomerBookings from "./pages/CustomerBookings";
 import AdminCustomerView from "./pages/AdminCustomerView";
 import Profile from "./pages/Profile";
+import MechanicHome from "./pages/MechanicHome";
 
 
 function App() {
@@ -167,6 +168,14 @@ function App() {
             </ProtectedRoute>
           }
         />
+        <Route
+  path="/mechanic-home"
+  element={
+    <ProtectedRoute allowedRole="MECHANIC">
+      <MechanicHome />
+    </ProtectedRoute>
+  }
+/>
 
 
 
