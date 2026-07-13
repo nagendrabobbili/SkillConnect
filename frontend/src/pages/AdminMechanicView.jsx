@@ -17,17 +17,27 @@ function AdminMechanicView() {
   }, []);
 
   const loadMechanic = async () => {
-    try {
-      const response = await api.get(
-        `/api/mechanics/${id}`
-      );
+  try {
 
-      setMechanic(response.data);
+    const response = await api.get(
+      `/api/mechanics/${id}`
+    );
 
-    } catch (error) {
-      console.log(error);
-    }
-  };
+    console.log(
+      "Mechanic details API:",
+      response.data
+    );
+
+    setMechanic(
+      response.data
+    );
+
+  } catch (error) {
+
+    console.log(error);
+
+  }
+};
 
   const loadBookings = async () => {
     try {
@@ -96,99 +106,109 @@ function AdminMechanicView() {
       </h1>
 
       {/* Mechanic Profile */}
-      <div className="card shadow-lg border-0 p-4 mb-5">
+<div className="card shadow-lg border-0 p-4 mb-5">
 
-        <div className="d-flex justify-content-between align-items-center">
+  <div className="d-flex justify-content-between align-items-center">
 
-          <h3 className="text-primary">
-            {mechanic.fullName}
-          </h3>
+    <h3 className="text-primary">
+      {mechanic.fullName}
+    </h3>
 
-          {
-            mechanic.available
-            ?
-            <span className="badge bg-success fs-6">
-              Available
-            </span>
-            :
-            <span className="badge bg-danger fs-6">
-              Busy
-            </span>
-          }
+    {
+      mechanic.availabilityStatus === "AVAILABLE" ? (
 
-        </div>
+        <span className="badge bg-success fs-6">
+          🟢 Available
+        </span>
 
-        <hr />
+      ) : mechanic.availabilityStatus === "BUSY" ? (
 
-        <div className="row">
+        <span className="badge bg-warning text-dark fs-6">
+          🟡 Busy
+        </span>
 
-          <div className="col-md-6">
+      ) : (
 
-            <p>
-              <strong>📧 Email:</strong>
-              {" "}
-              {mechanic.email}
-            </p>
+        <span className="badge bg-danger fs-6">
+          🔴 Offline
+        </span>
 
-            <p>
-              <strong>📞 Phone:</strong>
-              {" "}
-              {mechanic.phone}
-            </p>
+      )
+    }
 
-            <p>
-              <strong>🔧 Specialization:</strong>
-              {" "}
-              {mechanic.specialization}
-            </p>
+  </div>
 
-            <p>
-              <strong>⭐ Experience:</strong>
-              {" "}
-              {mechanic.experience} Years
-            </p>
+  <hr />
 
-          </div>
+  <div className="row">
 
-          <div className="col-md-6">
+    <div className="col-md-6">
 
-            <p>
-              <strong>🏙 City:</strong>
-              {" "}
-              {mechanic.city}
-            </p>
+      <p>
+        <strong>📧 Email:</strong>
+        {" "}
+        {mechanic.email}
+      </p>
 
-            <p>
-              <strong>🏠 Address:</strong>
-              {" "}
-              {mechanic.address}
-            </p>
+      <p>
+        <strong>📞 Phone:</strong>
+        {" "}
+        {mechanic.phone}
+      </p>
 
-            <p>
-              <strong>⭐ Average Rating:</strong>
-              {" "}
-              {mechanic.rating || 0}/5
-            </p>
+      <p>
+        <strong>🔧 Specialization:</strong>
+        {" "}
+        {mechanic.specialization}
+      </p>
 
-            {
-              mechanic.latitude &&
-              mechanic.longitude &&
+      <p>
+        <strong>⭐ Experience:</strong>
+        {" "}
+        {mechanic.experience} Years
+      </p>
 
-              <a
-                href={`https://www.google.com/maps?q=${mechanic.latitude},${mechanic.longitude}`}
-                target="_blank"
-                rel="noreferrer"
-                className="btn btn-primary mt-2"
-              >
-                📍 View Service Location
-              </a>
-            }
+    </div>
 
-          </div>
+    <div className="col-md-6">
 
-        </div>
+      <p>
+        <strong>🏙 City:</strong>
+        {" "}
+        {mechanic.city}
+      </p>
 
-      </div>
+      <p>
+        <strong>🏠 Address:</strong>
+        {" "}
+        {mechanic.address}
+      </p>
+
+      <p>
+        <strong>⭐ Average Rating:</strong>
+        {" "}
+        {mechanic.rating || 0}/5
+      </p>
+
+      {
+        mechanic.latitude &&
+        mechanic.longitude &&
+
+        <a
+          href={`https://www.google.com/maps?q=${mechanic.latitude},${mechanic.longitude}`}
+          target="_blank"
+          rel="noreferrer"
+          className="btn btn-primary mt-2"
+        >
+          📍 View Service Location
+        </a>
+      }
+
+    </div>
+
+  </div>
+
+</div>
 
       {/* Statistics */}
       <div className="row mb-5">

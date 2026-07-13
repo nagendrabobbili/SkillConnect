@@ -23,6 +23,9 @@ import CustomerList from "./pages/CustomerList";
 
 import ReviewMechanic from "./pages/ReviewMechanic";
 import AddReview from "./pages/AddReview";
+import CustomerBookings from "./pages/CustomerBookings";
+import AdminCustomerView from "./pages/AdminCustomerView";
+import Profile from "./pages/Profile";
 
 
 function App() {
@@ -183,6 +186,14 @@ function App() {
             </ProtectedRoute>
           }
         />
+        <Route
+  path="/admin/customer/:id"
+  element={
+    <ProtectedRoute allowedRole="ADMIN">
+      <AdminCustomerView />
+    </ProtectedRoute>
+  }
+/>
 
 
 
@@ -207,6 +218,22 @@ function App() {
             </ProtectedRoute>
           }
         />
+        <Route
+  path="/profile"
+  element={
+    <ProtectedRoute allowedRole="CUSTOMER">
+      <Profile />
+    </ProtectedRoute>
+  }
+/>
+        <Route
+  path="/admin/customers/bookings/:phone"
+  element={
+    <ProtectedRoute allowedRole="ADMIN">
+      <CustomerBookings />
+    </ProtectedRoute>
+  }
+/>
 
 
 

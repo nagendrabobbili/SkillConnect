@@ -50,6 +50,16 @@ function MechanicDashboard() {
         m => m.email === user.email
       );
 
+      console.log(
+        "Logged User:",
+        user
+      );
+
+      console.log(
+        "Found Mechanic:",
+        mechanic
+      );
+
       if (mechanic) {
 
         setMechanicId(
@@ -71,6 +81,7 @@ function MechanicDashboard() {
     } catch (error) {
 
       console.log(error);
+
       setLoading(false);
 
     }
@@ -95,8 +106,9 @@ function MechanicDashboard() {
     }
   };
 
-  // Change mechanic availability manually
-  const changeAvailability = async (status) => {
+  const changeAvailability = async (
+    status
+  ) => {
 
     try {
 
@@ -104,7 +116,9 @@ function MechanicDashboard() {
         `/api/mechanics/${mechanicId}/availability?status=${status}`
       );
 
-      setAvailabilityStatus(status);
+      setAvailabilityStatus(
+        status
+      );
 
       alert(
         `Status changed to ${status}`
@@ -120,7 +134,6 @@ function MechanicDashboard() {
     }
   };
 
-  // Booking status update
   const updateStatus = async (
     bookingId,
     status
@@ -168,6 +181,11 @@ function MechanicDashboard() {
       b => b.status === "COMPLETED"
     );
 
+  const cancelledBookings =
+    bookings.filter(
+      b => b.status === "CANCELLED"
+    );
+
   const getBadgeClass = (status) => {
 
     switch (status) {
@@ -181,12 +199,17 @@ function MechanicDashboard() {
       case "COMPLETED":
         return "bg-primary";
 
+      case "CANCELLED":
+        return "bg-dark";
+
       default:
         return "bg-warning text-dark";
     }
   };
 
-  const BookingCard = ({ booking }) => (
+  const BookingCard = ({
+    booking
+  }) => (
 
     <div className="col-lg-4 col-md-6 mb-4">
 
@@ -222,10 +245,10 @@ function MechanicDashboard() {
           }
 
           {
-            booking.problemDescription &&
+            booking.issueDescription &&
             <p>
               <FaClipboardList className="me-2 text-secondary" />
-              {booking.problemDescription}
+              {booking.issueDescription}
             </p>
           }
 
@@ -240,6 +263,7 @@ function MechanicDashboard() {
           </p>
 
           <div className="mb-3">
+
             <span
               className={`badge ${getBadgeClass(
                 booking.status
@@ -247,6 +271,7 @@ function MechanicDashboard() {
             >
               {booking.status}
             </span>
+
           </div>
 
           {
@@ -297,12 +322,19 @@ function MechanicDashboard() {
             </button>
           }
 
+          {
+            booking.status === "CANCELLED" &&
+
+            <div className="alert alert-dark mt-3">
+              ❌ Customer cancelled this booking.
+            </div>
+          }
+
         </div>
 
       </div>
 
     </div>
-
   );
 
   if (loading) {
@@ -323,8 +355,6 @@ function MechanicDashboard() {
       <h1 className="text-center text-primary fw-bold mb-4">
         🚗 Mechanic Dashboard
       </h1>
-
-      {/* Availability Section */}
 
       <div className="text-center mb-5">
 
@@ -377,7 +407,7 @@ function MechanicDashboard() {
 
         <h5 className="mt-3">
 
-          Current Status :
+          Current Status:
 
           {" "}
 
@@ -397,11 +427,9 @@ function MechanicDashboard() {
 
       </div>
 
-      {/* Statistics */}
-
       <div className="row mb-5">
 
-        <div className="col-md-3 mb-3">
+        <div className="col-md-2 mb-3">
           <div className="card shadow p-4 text-center">
             <FaClock size={40} />
             <h2>{pendingBookings.length}</h2>
@@ -409,7 +437,7 @@ function MechanicDashboard() {
           </div>
         </div>
 
-        <div className="col-md-3 mb-3">
+        <div className="col-md-2 mb-3">
           <div className="card shadow p-4 text-center">
             <FaCheckCircle size={40} />
             <h2>{acceptedBookings.length}</h2>
@@ -417,7 +445,7 @@ function MechanicDashboard() {
           </div>
         </div>
 
-        <div className="col-md-3 mb-3">
+        <div className="col-md-2 mb-3">
           <div className="card shadow p-4 text-center">
             <FaTimesCircle size={40} />
             <h2>{rejectedBookings.length}</h2>
@@ -425,7 +453,7 @@ function MechanicDashboard() {
           </div>
         </div>
 
-        <div className="col-md-3 mb-3">
+        <div className="col-md-2 mb-3">
           <div className="card shadow p-4 text-center">
             <FaClipboardCheck size={40} />
             <h2>{completedBookings.length}</h2>
@@ -433,78 +461,75 @@ function MechanicDashboard() {
           </div>
         </div>
 
+        <div className="col-md-2 mb-3">
+          <div className="card shadow p-4 text-center">
+            <FaTimesCircle size={40} />
+            <h2>{cancelledBookings.length}</h2>
+            <h5>Cancelled</h5>
+          </div>
+        </div>
+
       </div>
 
-      <h3>
-        🕒 Incoming Requests
-      </h3>
-
+      <h3>🕒 Incoming Requests</h3>
       <div className="row">
-        {
-          pendingBookings.map(
-            b => (
-              <BookingCard
-                key={b.id}
-                booking={b}
-              />
-            )
-          )
-        }
+        {pendingBookings.map(b => (
+          <BookingCard
+            key={b.id}
+            booking={b}
+          />
+        ))}
       </div>
 
       <h3 className="mt-5">
         ✅ Accepted Jobs
       </h3>
-
       <div className="row">
-        {
-          acceptedBookings.map(
-            b => (
-              <BookingCard
-                key={b.id}
-                booking={b}
-              />
-            )
-          )
-        }
+        {acceptedBookings.map(b => (
+          <BookingCard
+            key={b.id}
+            booking={b}
+          />
+        ))}
       </div>
 
       <h3 className="mt-5">
         ❌ Rejected Requests
       </h3>
-
       <div className="row">
-        {
-          rejectedBookings.map(
-            b => (
-              <BookingCard
-                key={b.id}
-                booking={b}
-              />
-            )
-          )
-        }
+        {rejectedBookings.map(b => (
+          <BookingCard
+            key={b.id}
+            booking={b}
+          />
+        ))}
       </div>
 
       <h3 className="mt-5">
         🏁 Completed Jobs
       </h3>
-
       <div className="row">
-        {
-          completedBookings.map(
-            b => (
-              <BookingCard
-                key={b.id}
-                booking={b}
-              />
-            )
-          )
-        }
+        {completedBookings.map(b => (
+          <BookingCard
+            key={b.id}
+            booking={b}
+          />
+        ))}
+      </div>
+
+      <h3 className="mt-5">
+        🚫 Cancelled Requests
+      </h3>
+      <div className="row">
+        {cancelledBookings.map(b => (
+          <BookingCard
+            key={b.id}
+            booking={b}
+          />
+        ))}
       </div>
 
     </div>
-
   );
 }
 

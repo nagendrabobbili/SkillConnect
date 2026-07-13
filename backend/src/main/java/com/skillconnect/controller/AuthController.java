@@ -141,7 +141,7 @@ public class AuthController {
 
                 user.getName(),
 
-                user.getPhone(),
+                user.getEmail(),
 
                 user.getRole()
 

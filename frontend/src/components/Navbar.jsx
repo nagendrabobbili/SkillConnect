@@ -7,7 +7,6 @@ function Navbar() {
     JSON.parse(localStorage.getItem("user"))
   );
 
-
   // Refresh navbar whenever localStorage changes
   useEffect(() => {
 
@@ -24,19 +23,16 @@ function Navbar() {
 
     };
 
-
     window.addEventListener(
       "storage",
       checkUser
     );
-
 
     // Same tab updates
     const interval = setInterval(
       checkUser,
       500
     );
-
 
     return () => {
 
@@ -51,8 +47,6 @@ function Navbar() {
 
   }, []);
 
-
-
   const handleLogout = () => {
 
     localStorage.removeItem("user");
@@ -64,21 +58,16 @@ function Navbar() {
 
   };
 
-
-
   const homePath =
     user?.role === "ADMIN"
       ? "/admin"
       : "/";
-
-
 
   return (
 
     <nav className="navbar navbar-expand-lg navbar-dark bg-dark shadow">
 
       <div className="container">
-
 
         {/* BRAND */}
         <Link
@@ -88,31 +77,21 @@ function Navbar() {
           🚗 SkillConnect
         </Link>
 
-
-
         <button
           className="navbar-toggler"
           type="button"
           data-bs-toggle="collapse"
           data-bs-target="#navbarContent"
         >
-
           <span className="navbar-toggler-icon"></span>
-
         </button>
-
-
-
 
         <div
           className="collapse navbar-collapse"
           id="navbarContent"
         >
 
-
           <ul className="navbar-nav ms-auto">
-
-
 
             {/* HOME */}
             <li className="nav-item">
@@ -125,9 +104,6 @@ function Navbar() {
               </Link>
 
             </li>
-
-
-
 
             {/* CUSTOMER MENU */}
             {
@@ -146,7 +122,6 @@ function Navbar() {
 
                   </li>
 
-
                   <li className="nav-item">
 
                     <Link
@@ -158,15 +133,21 @@ function Navbar() {
 
                   </li>
 
+                  <li className="nav-item">
+
+                    <Link
+                      className="nav-link"
+                      to="/profile"
+                    >
+                      My Profile
+                    </Link>
+
+                  </li>
 
                 </>
 
               )
             }
-
-
-
-
 
             {/* MECHANIC MENU */}
             {
@@ -186,11 +167,6 @@ function Navbar() {
               )
             }
 
-
-
-
-
-
             {/* ADMIN MENU */}
             {
               user?.role === "ADMIN" && (
@@ -208,8 +184,6 @@ function Navbar() {
 
                   </li>
 
-
-
                   <li className="nav-item">
 
                     <Link
@@ -220,9 +194,6 @@ function Navbar() {
                     </Link>
 
                   </li>
-
-
-
 
                   <li className="nav-item">
 
@@ -235,9 +206,6 @@ function Navbar() {
 
                   </li>
 
-
-
-
                   <li className="nav-item">
 
                     <Link
@@ -249,16 +217,10 @@ function Navbar() {
 
                   </li>
 
-
                 </>
 
               )
             }
-
-
-
-
-
 
             {/* USER INFO + LOGOUT */}
             {
@@ -272,8 +234,6 @@ function Navbar() {
 
                   </li>
 
-
-
                   <li className="nav-item">
 
                     <button
@@ -285,15 +245,11 @@ function Navbar() {
 
                   </li>
 
-
                 </>
-
 
               ) : (
 
-
                 <>
-
 
                   <li className="nav-item ms-2">
 
@@ -309,9 +265,6 @@ function Navbar() {
 
                   </li>
 
-
-
-
                   <li className="nav-item">
 
                     <Link to="/register">
@@ -326,29 +279,21 @@ function Navbar() {
 
                   </li>
 
-
                 </>
-
 
               )
             }
 
-
-
           </ul>
-
 
         </div>
 
-
       </div>
-
 
     </nav>
 
   );
 
 }
-
 
 export default Navbar;

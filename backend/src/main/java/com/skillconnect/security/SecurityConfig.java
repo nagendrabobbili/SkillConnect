@@ -28,6 +28,7 @@ public class SecurityConfig {
                 jwtAuthenticationFilter;
     }
 
+
     @Bean
     public PasswordEncoder passwordEncoder() {
 
@@ -35,76 +36,108 @@ public class SecurityConfig {
 
     }
 
+
     @Bean
     public SecurityFilterChain securityFilterChain(
             HttpSecurity http
     ) throws Exception {
+
 
         http
 
                 // Disable CSRF for REST API
                 .csrf(csrf -> csrf.disable())
 
+
                 // Enable CORS
                 .cors(Customizer.withDefaults())
 
-                // JWT uses stateless sessions
+
+                // JWT stateless session
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(
                                 SessionCreationPolicy.STATELESS
                         )
                 )
 
+
                 // Route authorization
                 .authorizeHttpRequests(auth -> auth
 
-                        // Public endpoints
+
+                        // Public authentication APIs
                         .requestMatchers(
                                 "/api/auth/**"
                         ).permitAll()
 
-                        // Admin endpoints
+
+
+                        // Admin APIs
                         .requestMatchers(
                                 "/api/admin/**"
                         ).hasRole("ADMIN")
 
-                        // Mechanic endpoints
+
+
+                        // Mechanic APIs
                         .requestMatchers(
                                 "/api/mechanic/**"
                         ).hasRole("MECHANIC")
 
-                        // Customer endpoints
+
+
+                        // Booking APIs
+                        // Temporary open for testing
+                        .requestMatchers(
+                                "/api/bookings/**"
+                        ).permitAll()
+
+
+
+                        // Customer APIs
                         .requestMatchers(
                                 "/api/customer/**"
                         ).hasRole("CUSTOMER")
 
-                        // Swagger if you add it later
+
+
+                        // Swagger
                         .requestMatchers(
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**"
                         ).permitAll()
 
-                        // Everything else requires authentication
+
+
+                        // Other APIs require login
                         .anyRequest()
                         .authenticated()
+
                 )
 
-                // Disable default login form
+
+
+                // Disable default login
                 .formLogin(form ->
                         form.disable()
                 )
 
-                // Disable browser basic auth popup
+
+                // Disable basic auth popup
                 .httpBasic(httpBasic ->
                         httpBasic.disable()
                 )
 
-                // Register JWT filter
+
+                // JWT filter
                 .addFilterBefore(
                         jwtAuthenticationFilter,
                         UsernamePasswordAuthenticationFilter.class
                 );
 
+
         return http.build();
+
     }
+
 }

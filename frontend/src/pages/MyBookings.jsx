@@ -38,12 +38,44 @@ function MyBookings() {
 
       if (error.response?.status === 401) {
 
-        alert("Session expired. Please login again.");
+        alert(
+          "Session expired. Please login again."
+        );
 
         localStorage.clear();
 
         window.location.href = "/login";
       }
+    }
+  };
+
+  const cancelBooking = async (id) => {
+
+    const confirmCancel = window.confirm(
+      "Are you sure you want to cancel this booking?"
+    );
+
+    if (!confirmCancel) return;
+
+    try {
+
+      await api.put(
+        `/api/bookings/cancel/${id}`
+      );
+
+      alert(
+        "Booking cancelled successfully"
+      );
+
+      loadBookings();
+
+    } catch (error) {
+
+      console.log(error);
+
+      alert(
+        "Failed to cancel booking"
+      );
     }
   };
 
@@ -62,6 +94,9 @@ function MyBookings() {
 
       case "COMPLETED":
         return "bg-primary";
+
+      case "CANCELLED":
+        return "bg-dark";
 
       default:
         return "bg-secondary";
@@ -84,17 +119,28 @@ function MyBookings() {
       case "COMPLETED":
         return <FaCheckCircle className="me-2" />;
 
+      case "CANCELLED":
+        return <FaTimesCircle className="me-2" />;
+
       default:
         return null;
     }
   };
 
   const activeBookings = bookings.filter(
-    booking => booking.status !== "COMPLETED"
+    booking =>
+      booking.status !== "COMPLETED" &&
+      booking.status !== "CANCELLED"
   );
 
   const completedBookings = bookings.filter(
-    booking => booking.status === "COMPLETED"
+    booking =>
+      booking.status === "COMPLETED"
+  );
+
+  const cancelledBookings = bookings.filter(
+    booking =>
+      booking.status === "CANCELLED"
   );
 
   const BookingCard = ({ booking }) => (
@@ -162,16 +208,31 @@ function MyBookings() {
               {getStatusIcon(
                 booking.status
               )}
+
               {booking.status}
+
             </span>
 
           </div>
 
           {
             booking.status === "PENDING" &&
-            <p className="text-warning fw-bold">
-              Waiting for mechanic response...
-            </p>
+            <>
+              <p className="text-warning fw-bold">
+                Waiting for mechanic response...
+              </p>
+
+              <button
+                className="btn btn-danger w-100"
+                onClick={() =>
+                  cancelBooking(
+                    booking.id
+                  )
+                }
+              >
+                ❌ Cancel Booking
+              </button>
+            </>
           }
 
           {
@@ -185,6 +246,13 @@ function MyBookings() {
             booking.status === "REJECTED" &&
             <p className="text-danger fw-bold">
               Mechanic rejected your request.
+            </p>
+          }
+
+          {
+            booking.status === "CANCELLED" &&
+            <p className="text-dark fw-bold">
+              Booking cancelled successfully.
             </p>
           }
 
@@ -259,6 +327,30 @@ function MyBookings() {
             </div>
             :
             completedBookings.map(
+              booking =>
+                <BookingCard
+                  key={booking.id}
+                  booking={booking}
+                />
+            )
+        }
+
+      </div>
+
+      <h3 className="mt-5 mb-4 text-danger">
+        ❌ Cancelled Bookings
+      </h3>
+
+      <div className="row">
+
+        {
+          cancelledBookings.length === 0
+            ?
+            <div className="text-center">
+              <h5>No cancelled bookings.</h5>
+            </div>
+            :
+            cancelledBookings.map(
               booking =>
                 <BookingCard
                   key={booking.id}
